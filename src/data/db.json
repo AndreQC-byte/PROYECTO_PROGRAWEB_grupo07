@@ -1,0 +1,99 @@
+{
+  "usuarios": [
+    {
+      "id": "USR-001",
+      "nombres": "Camila Alejandra",
+      "apellidos": "Quispe Ramos",
+      "correo": "camila.quispe@aloe.ulima.edu.pe",
+      "rol": "Usuario",
+      "telefono": "987 654 321",
+      "unidad": "Ingeniería de Sistemas",
+      "ambienteHabitual": "A-201",
+      "estado": "Activo"
+    },
+    {
+      "id": "USR-002",
+      "nombres": "Julio César",
+      "apellidos": "Paredes Soto",
+      "correo": "jparedes@ulima.edu.pe",
+      "rol": "Técnico",
+      "telefono": "951 220 874",
+      "especialidades": ["CAT-001", "CAT-003"],
+      "estado": "Activo"
+    },
+     {
+      "id": "USR-003",
+      "nombres": "Lucía",
+      "apellidos": "Mendoza Ríos",
+      "correo": "lmendoza@ulima.edu.pe",
+      "rol": "Supervisor",
+      "estado": "Activo"
+    }
+  ],
+  "categorias": [
+    {
+      "id": "CAT-001",
+      "nombre": "Audiovisuales",
+      "estado": "Activa"
+    },
+    {
+      "id": "CAT-002",
+      "nombre": "Climatización",
+      "estado": "Activa"
+    }
+  ],
+  "subcategorias": [
+      {
+          "id": "SUB-001",
+          "categoriaPadreId": "CAT-001",
+          "nombre": "Proyector no enciende",
+          "prioridadDefecto": "Crítica",
+          "tiempoEsperadoHoras": 2,
+          "estado": "Activa"
+      }
+  ],
+  "ambientes": [
+    {
+      "id": "AMB-001",
+      "codigo": "A-201",
+      "tipo": "Aula",
+      "pabellon": "A",
+      "piso": 2,
+      "sede": "Campus Monterrico",
+      "capacidad": 68
+    }
+  ],
+  "tickets": [
+    {
+      "id": "TCK-2026-00147",
+      "asunto": "Proyector no enciende en aula A-201",
+      "descripcion": "El proyector enciende el foco pero la imagen no llega a la pantalla.",
+      "usuarioId": "USR-001",
+      "categoriaId": "CAT-001",
+      "subcategoriaId": "SUB-001",
+      "ambienteId": "AMB-001",
+      "tecnicoAsignadoId": "USR-002",
+      "prioridad": "Crítica",
+      "estado": "En atención",
+      "fechaRegistro": "2026-09-07T08:12:00Z",
+      "fechaAsignacion": "2026-09-07T08:20:00Z",
+      "tiempoEsperadoHoras": 2,
+      "bitacora": [
+        {
+          "id": "BIT-001",
+          "autorId": "USR-001",
+          "fecha": "2026-09-07T08:12:00Z",
+          "tipo": "Comentario Público",
+          "mensaje": "El proyector enciende el foco pero la imagen no llega. Ya probé con dos laptops distintas y el mismo cable."
+        },
+        {
+          "id": "BIT-002",
+          "autorId": "USR-002",
+          "fecha": "2026-09-07T08:41:00Z",
+          "tipo": "Nota Interna",
+          "mensaje": "Nota interna: el HDMI de la mesa mide 0 V. Probable falla del extensor HDBaseT del rack del piso 2."
+        }
+      ]
+    }
+  ]
+}
