@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+
 import ListaCategorias from '../features/catalogo/ListaCategorias';
+import NuevoTicket from '../pages/NuevoTicket';
+import LayoutUsuario from '../components/usuario/Layoutusuario';
 // Importaciones simuladas para las demás historias en desarrollo
 const VistaTemporal = ({ nombre }) => <div className="contenedor-principal"><h2>Vista en desarrollo: {nombre}</h2></div>;
 const AccesoDenegado = () => <div className="contenedor-principal"><h2>403 - No tienes permiso para ver esta sección</h2></div>; // Vista requerida por HU-1[cite: 3]
@@ -40,6 +43,12 @@ const AppRouter = () => {
           <RutaProtegida rolesPermitidos={['Usuario']}>
             <VistaTemporal nombre="Mis Tickets" />
           </RutaProtegida>
+        } />
+
+        <Route path="/mis-tickets/nuevo" element={
+          <LayoutUsuario>
+            <NuevoTicket />
+          </LayoutUsuario>
         } />
 
         {/* Rutas de Técnico[cite: 4] */}
