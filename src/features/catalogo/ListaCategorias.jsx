@@ -15,7 +15,6 @@ const ListaCategorias = () => {
   };
 
   const confirmarDesactivacion = () => {
-    // Aquí se actualizaría el estado local o se llamaría a la API en la entrega 2
     alert(`La categoría ${catSeleccionada.nombre} ha sido desactivada.`);
     setModalAbierto(false);
   };
