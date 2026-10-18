@@ -21,9 +21,9 @@ const ModalNuevoAmbiente = ({ onCerrar, onGuardar }) => {
     }
     
     const nuevo = {
-      id: `AMB-00${Math.floor(Math.random() * 100)}`, // ID simulado
+      id: `AMB-00${Math.floor(Math.random() * 100)}`, // ID simulado ya que asi se asgina en el MockUp
       ...formulario,
-      sede: 'Campus Monterrico' // Dato por defecto según mockup[cite: 4]
+      sede: 'Campus Monterrico' // Dato por defecto según mockup
     };
     onGuardar(nuevo);
   };
