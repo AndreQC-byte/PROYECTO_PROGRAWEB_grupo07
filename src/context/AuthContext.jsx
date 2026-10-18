@@ -5,7 +5,8 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   // Estado inicial simulando a un visitante (sin sesión)
-  const [usuario, setUsuario] = useState(null);
+  // TEMPORAL (solo desarrollo local): sesión forzada como Julio Paredes (Técnico). NO SUBIR: revertir con `git checkout src/context/AuthContext.jsx`
+  const [usuario, setUsuario] = useState(db.usuarios[1]);
 
   // Función provisional para desarrollo en paralelo
   const iniciarSesion = (correo) => {
