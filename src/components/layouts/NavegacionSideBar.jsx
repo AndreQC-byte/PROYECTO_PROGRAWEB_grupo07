@@ -1,6 +1,13 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+
+// Enlace del menú: sin subrayado y resaltado cuando su ruta es la página actual ("end" evita marcar dos a la vez)
+const Enlace = ({ to, children }) => (
+  <NavLink to={to} end className={({ isActive }) => `nav-enlace ${isActive ? 'nav-enlace-activo' : ''}`}>
+    {children}
+  </NavLink>
+);
 
 const NavegacionSidebar = () => {
   const { usuario } = useAuth();
@@ -17,16 +24,17 @@ const NavegacionSidebar = () => {
         <div style={{ fontSize: '13px', color: '#5F6C78' }}>{usuario.rol}</div>
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {/* Enlaces para el rol USUARIO[cite: 3] */}
         {usuario.rol === 'Usuario' && (
           <>
             <h5 style={{ fontSize: '16px', color: '#141C24', margin: '12px 0 4px' }}>MIS SERVICIOS</h5>
-            <Link to="/inicio">Inicio</Link>
-            <Link to="/mis-tickets/nuevo">Nuevo ticket</Link>
-            <Link to="/mis-tickets">Mis tickets</Link>
-            <Link to="/encuestas">Mis encuestas</Link>
-            <Link to="/mi-cuenta">Mi cuenta</Link>
+            <Enlace to="/inicio">Inicio</Enlace>
+            <Enlace to="/mis-tickets/nuevo">Nuevo ticket</Enlace>
+            <Enlace to="/mis-tickets">Mis tickets</Enlace>
+            <Enlace to="/encuestas/pendiente">Encuesta pendiente</Enlace>
+            <Enlace to="/encuestas">Mis encuestas</Enlace>
+            <Enlace to="/mi-cuenta">Mi cuenta</Enlace>
           </>
         )}
 
@@ -34,9 +42,9 @@ const NavegacionSidebar = () => {
         {usuario.rol === 'Técnico' && (
           <>
             <h5 style={{ fontSize: '16px', color: '#141C24', margin: '12px 0 4px' }}>ATENCIÓN</h5>
-            <Link to="/tecnico/bandeja">Mi bandeja</Link>
-            <Link to="/tecnico/historial">Historial</Link>
-            <Link to="/mi-cuenta">Mi cuenta</Link>
+            <Enlace to="/tecnico/bandeja">Mi bandeja</Enlace>
+            <Enlace to="/tecnico/historial">Historial</Enlace>
+            <Enlace to="/mi-cuenta">Mi cuenta</Enlace>
           </>
         )}
 
@@ -44,12 +52,13 @@ const NavegacionSidebar = () => {
         {usuario.rol === 'Supervisor' && (
           <>
             <h5 style={{ fontSize: '16px', color: '#141C24', margin: '12px 0 4px' }}>SUPERVISIÓN</h5>
-            <Link to="/supervisor/tablero">Tablero</Link>
-            <Link to="/supervisor/cola">Cola de atención</Link>
-            <Link to="/catalogo/categorias">Categorías</Link>
-            <Link to="/catalogo/ambientes">Sedes y ambientes</Link>
-            <Link to="/catalogo/tecnicos">Técnicos por categoría</Link>
-            <Link to="/supervisor/usuarios">Usuarios</Link>
+            <Enlace to="/supervisor/tablero">Tablero</Enlace>
+            <Enlace to="/supervisor/cola">Cola de atención</Enlace>
+            <Enlace to="/catalogo/categorias">Categorías</Enlace>
+            <Enlace to="/catalogo/ambientes">Sedes y ambientes</Enlace>
+            <Enlace to="/catalogo/tecnicos">Técnicos por categoría</Enlace>
+            <Enlace to="/supervisor/satisfaccion">Satisfacción</Enlace>
+            <Enlace to="/supervisor/usuarios">Usuarios</Enlace>
           </>
         )}
       </nav>
