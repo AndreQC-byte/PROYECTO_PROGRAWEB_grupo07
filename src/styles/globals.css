@@ -1,0 +1,144 @@
+@import './theme.css';
+@import './atencion.css'; /* HU-5: Atención y cierre */
+
+/* Reseteo básico y aplicación de tipografía */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-principal); /* IBM Plex Sans */ /*Estandar que estamos siguiendo según el documento*/
+  background-color: var(--color-bg); /* #F4F6F8 */
+  color: var(--color-text); /* #141C24 */
+  font-size: var(--text-cuerpo);
+  line-height: var(--lh-cuerpo);
+}
+
+/* Tipografía de Encabezados */
+h1 {
+  font-size: var(--text-titulo-pantalla);
+  line-height: var(--lh-titulo-pantalla);
+  font-weight: 600;
+}
+
+h4 {
+  font-size: var(--text-titulo-seccion);
+  line-height: var(--lh-titulo-seccion);
+}
+
+h5 {
+  font-size: var(--text-subtitulo);
+  line-height: var(--lh-subtitulo);
+}
+
+/* Reglas de Layout General */
+.contenedor-principal {
+  max-width: var(--ancho-contenido); /* 1200 px centrado */
+  margin: 0 auto;
+  padding-top: var(--alto-cabecera); /* 60 px */
+  min-height: calc(100vh - var(--alto-pie)); /* Reserva 44px para el pie */
+}
+
+/* Reglas UI Comunes */
+button, input, select, textarea, .tarjeta-ticket, .etiqueta-estado {
+  border-radius: var(--border-radius); /* 4 px en todo */
+}
+
+/* Modales y Desplegables (Las únicas excepciones que llevan sombra) */
+.modal, .menu-desplegable {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15); /* Sin sombras salvo modales */
+  background-color: var(--color-surface); /* #FFFFFF */
+}
+
+/* Tablas */
+.tabla-datos tr {
+  height: var(--alto-fila-tabla); /* Filas de tabla de 44 px */
+}
+
+/* Estilos de botones básicos */
+.btn-primario {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4); /* Espaciado múltiplo de 4 */
+}
+
+.btn-secundario {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-destructivo {
+  background-color: var(--color-danger);
+  color: var(--color-surface);
+  border: none;
+}
+
+:root {
+  --azul: #1F4E79;
+  --azul-oscuro: #163A5A;
+  --fondo: #F4F6F8;
+  --borde: #D6DEE5;
+  --rojo: #B4322B;
+  --naranja: #D2601A;
+  --amarillo: #B7791F;
+  --celeste: #3B6FA8;
+}
+
+.filtros input, .filtros select, .acciones button {
+  margin: 0 8px 8px 0;
+  padding: 6px;
+}
+
+table, thead {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  background: #fff;
+}
+
+tbody {
+  display: flex;
+  flex-direction: column;
+}
+
+tr {
+  display: flex;
+  border-bottom: 1px solid var(--borde);
+}
+
+th, td {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: left;
+}
+
+.chk {
+  flex: 0 0 40px;
+}
+
+.critica { color: var(--rojo); }
+.alta { color: var(--naranja); }
+.media { color: var(--amarillo); }
+.baja { color: var(--celeste); }
+
+.modal {
+  position: fixed;
+  top: 100px;
+  left: 35%;
+  width: 400px;
+  padding: 24px;
+  background: #fff;
+  border: 1px solid var(--azul);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.modal select, .modal textarea {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+}
+

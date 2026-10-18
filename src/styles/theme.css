@@ -1,0 +1,54 @@
+/* Sistema de Diseño Operativo - Mesa de Ayuda */
+:root {
+  /* Paleta Base */ /*Usen estas variables para cualquiera de sus mockups*/
+  --color-primary: #1F4E79;
+  --color-primary-dark: #163A5A;
+  --color-primary-soft: #E7EFF6;
+  --color-accent: #D2601A;
+  --color-bg: #F4F6F8;
+  --color-surface: #FFFFFF;
+  --color-border: #D6DEE5;
+  --color-text: #141C24;
+  --color-text-muted: #5F6C78;
+
+  /* Paleta Semántica / Estados */
+  --color-success: #1E7F4D; /* Resuelto, Cerrado */
+  --color-warning: #B7791F; /* Media, En atención */
+  --color-danger: #B4322B;  /* Crítica, Reabierto */
+  --color-info: #3B6FA8;    /* Baja, Abierto */
+  --color-alta: #D2601A;    /* Alta (Usa el color accent) */
+
+  /* Tipografías */
+  --font-principal: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Tamaños de texto (Size / Line-height) */
+  --text-titulo-pantalla: 28px;
+  --lh-titulo-pantalla: 32px;
+  
+  --text-titulo-seccion: 20px;
+  --lh-titulo-seccion: 28px;
+  
+  --text-subtitulo: 16px;
+  --lh-subtitulo: 24px;
+  
+  --text-cuerpo: 15px;
+  --lh-cuerpo: 22px;
+  
+  --text-auxiliar: 13px;
+  --lh-auxiliar: 18px;
+  
+  --text-etiqueta: 12px;
+  --lh-etiqueta: 16px;
+
+  /* Estructura y Espaciado */
+  --border-radius: 4px; /* Radio de 4px en todo */
+  --spacing-unit: 4px; /* Espaciado en múltiplos de 4px */
+  --ancho-contenido: 1200px;
+  
+  /* Dimensiones de Layout */
+  --alto-cabecera: 60px;
+  --ancho-sidebar: 236px;
+  --alto-pie: 44px;
+  --alto-fila-tabla: 44px;
+}
