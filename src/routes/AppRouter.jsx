@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 import ListaCategorias from '../features/catalogo/ListaCategorias';
+import LayoutAtencion from '../features/atencion_cierre_tickets/LayoutAtencion';
+import DetalleTicket from '../features/atencion_cierre_tickets/DetalleTicket';
+import HistorialCambios from '../features/atencion_cierre_tickets/HistorialCambios';
 // Importaciones simuladas para las demás historias en desarrollo
 const VistaTemporal = ({ nombre }) => <div className="contenedor-principal"><h2>Vista en desarrollo: {nombre}</h2></div>;
 const AccesoDenegado = () => <div className="contenedor-principal"><h2>403 - No tienes permiso para ver esta sección</h2></div>; // Vista requerida por HU-1[cite: 3]
@@ -48,6 +51,16 @@ const AppRouter = () => {
             <VistaTemporal nombre="Mi Bandeja" />
           </RutaProtegida>
         } />
+
+        {/* HU-5: Atención y cierre (solo Técnico). La ruta padre comparte el estado entre el detalle y el historial */}
+        <Route element={
+          <RutaProtegida rolesPermitidos={['Técnico']}>
+            <LayoutAtencion />
+          </RutaProtegida>
+        }>
+          <Route path="/tecnico/ticket/:id" element={<DetalleTicket />} />
+          <Route path="/tecnico/ticket/:id/historial" element={<HistorialCambios />} />
+        </Route>
 
         {/* Rutas de Supervisor (Incluye tu HU-2)[cite: 4] */}
         <Route path="/supervisor/cola" element={

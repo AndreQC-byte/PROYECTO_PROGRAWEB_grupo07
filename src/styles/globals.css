@@ -1,4 +1,5 @@
 @import './theme.css';
+@import './atencion.css'; /* HU-5: Atención y cierre */
 
 /* Reseteo básico y aplicación de tipografía */
 * {
