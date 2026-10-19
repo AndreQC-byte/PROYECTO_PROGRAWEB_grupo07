@@ -9,7 +9,10 @@
       "telefono": "987 654 321",
       "unidad": "Ingeniería de Sistemas",
       "ambienteHabitual": "A-201",
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "camila123",
+      "intentosFallidos": 0,
+      "motivoBloqueo": null
     },
     {
       "id": "USR-002",
