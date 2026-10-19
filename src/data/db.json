@@ -12,6 +12,7 @@
       "estado": "Activo",
       "contrasena": "camila123",
       "intentosFallidos": 0,
+      "bloqueadoHasta": null,
       "motivoBloqueo": null
     },
     {
@@ -22,7 +23,12 @@
       "rol": "Técnico",
       "telefono": "951 220 874",
       "especialidades": ["CAT-001", "CAT-003"],
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "julio123",
+      "intentosFallidos": 0,
+      "bloqueadoHasta": null,
+      "motivoBloqueo": null
+      
     },
      {
       "id": "USR-003",
@@ -30,7 +36,11 @@
       "apellidos": "Mendoza Ríos",
       "correo": "lmendoza@ulima.edu.pe",
       "rol": "Supervisor",
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "lucia123",
+      "intentosFallidos": 0,
+      "bloqueadoHasta": null,
+      "motivoBloqueo": null
     },
     {
       "id": "USR-004",
