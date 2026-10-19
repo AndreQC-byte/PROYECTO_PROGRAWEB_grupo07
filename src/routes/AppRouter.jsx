@@ -5,6 +5,10 @@ import ListaCategorias from '../features/catalogo/ListaCategorias';
 import LayoutAtencion from '../features/atencion_cierre_tickets/LayoutAtencion';
 import DetalleTicket from '../features/atencion_cierre_tickets/DetalleTicket';
 import HistorialCambios from '../features/atencion_cierre_tickets/HistorialCambios';
+import NuevoTicket from '../features/registro_seguimiento_tickets/NuevoTicket';
+import ConfirmacionTicket from '../features/registro_seguimiento_tickets/ConfirmacionTicket';
+import MisTickets from '../features/registro_seguimiento_tickets/MisTickets';
+import DetalleTicketUsuario from '../features/registro_seguimiento_tickets/DetalleTicketUsuario';
 // Importaciones simuladas para las demás historias en desarrollo
 const VistaTemporal = ({ nombre }) => <div className="contenedor-principal"><h2>Vista en desarrollo: {nombre}</h2></div>;
 const AccesoDenegado = () => <div className="contenedor-principal"><h2>403 - No tienes permiso para ver esta sección</h2></div>; // Vista requerida por HU-1[cite: 3]
@@ -12,10 +16,10 @@ const AccesoDenegado = () => <div className="contenedor-principal"><h2>403 - No 
 // Componente para proteger rutas según el rol[cite: 3]
 const RutaProtegida = ({ children, rolesPermitidos }) => {
   const { usuario } = useAuth();
-  
+
   if (!usuario) return <Navigate to="/login" />;
   if (!rolesPermitidos.includes(usuario.rol)) return <Navigate to="/403" />;
-  
+
   return children;
 };
 
@@ -33,17 +37,20 @@ const AppRouter = () => {
         {/* Redirección a la vista principal según el rol (Requerimiento HU-1)[cite: 3] */}
         <Route path="/dashboard" element={
           usuario?.rol === 'Usuario' ? <Navigate to="/mis-tickets" /> :
-          usuario?.rol === 'Técnico' ? <Navigate to="/tecnico/bandeja" /> :
-          usuario?.rol === 'Supervisor' ? <Navigate to="/supervisor/cola" /> :
-          <Navigate to="/" />
+            usuario?.rol === 'Técnico' ? <Navigate to="/tecnico/bandeja" /> :
+              usuario?.rol === 'Supervisor' ? <Navigate to="/supervisor/cola" /> :
+                <Navigate to="/" />
         } />
 
         {/* Rutas de Usuario[cite: 4] */}
         <Route path="/mis-tickets" element={
           <RutaProtegida rolesPermitidos={['Usuario']}>
-            <VistaTemporal nombre="Mis Tickets" />
+            <MisTickets />
           </RutaProtegida>
         } />
+        <Route path="/mis-tickets/nuevo" element={<NuevoTicket />} />
+        <Route path="/mis-tickets/nuevo/registrado" element={<ConfirmacionTicket />} />
+        <Route path="/mis-tickets/:codigo" element={<DetalleTicketUsuario />} />
 
         {/* Rutas de Técnico[cite: 4] */}
         <Route path="/tecnico/bandeja" element={
