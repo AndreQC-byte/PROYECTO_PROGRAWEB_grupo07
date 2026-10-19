@@ -5,7 +5,13 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
-import Footer from "../../components/layouts/Footer";
+
+// Devuelve la fecha y hora actuales con el formato "07/09/2026 08:12"
+function fechaActual() {
+    const d = new Date();
+    const dos = (n) => String(n).padStart(2, "0");
+    return `${dos(d.getDate())}/${dos(d.getMonth() + 1)}/${d.getFullYear()} ${dos(d.getHours())}:${dos(d.getMinutes())}`;
+}
 
 // Usuario de PRUEBA que escribe los comentarios: luego saldrá de la sesión
 const USUARIO_ACTUAL = {
@@ -236,7 +242,10 @@ function DetalleTicketUsuario() {
                     )}
                 </main>
             </div>
-            <Footer />
+            <footer className="nuevo-ticket-pie">
+                <span>Mesa de Ayuda de Servicios del Campus - Universidad de Lima</span>
+                <span>soporte.campus@ulima.edu.pe - anexo 30500 - Términos - Privacidad</span>
+            </footer>
         </>
     );
 }

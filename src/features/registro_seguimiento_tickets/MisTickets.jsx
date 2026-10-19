@@ -5,7 +5,6 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
-import Footer from "../../components/layouts/Footer";
 
 const POR_PAGINA = 8;
 const DESDE = "2026-08-01";
@@ -242,7 +241,10 @@ function MisTickets() {
                     </div>
                 </main>
             </div>
-            <Footer />
+            <footer className="nuevo-ticket-pie">
+                <span>Mesa de Ayuda de Servicios del Campus - Universidad de Lima</span>
+                <span>soporte.campus@ulima.edu.pe - anexo 30500 - Términos - Privacidad</span>
+            </footer>
         </>
     );
 }

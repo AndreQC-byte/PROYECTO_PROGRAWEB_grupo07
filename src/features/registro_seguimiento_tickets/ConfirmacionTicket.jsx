@@ -5,7 +5,6 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
-import Footer from "../../components/layouts/Footer";
 
 function ConfirmacionTicket() {
   const { state } = useLocation();
@@ -72,7 +71,10 @@ function ConfirmacionTicket() {
           </div>
         </main>
       </div>
-      <Footer />
+      <footer className="nuevo-ticket-pie">
+        <span>Mesa de Ayuda de Servicios del Campus - Universidad de Lima</span>
+        <span>soporte.campus@ulima.edu.pe - anexo 30500 - Términos - Privacidad</span>
+      </footer>
     </>
   );
 }

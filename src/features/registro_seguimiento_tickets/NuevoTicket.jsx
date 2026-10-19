@@ -4,7 +4,6 @@ import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
-import Footer from "../../components/layouts/Footer";
 
 const subcategoriasPorCategoria = {
     "Audiovisuales": ["Proyector no enciende", "Imagen distorsionada"],
@@ -219,7 +218,10 @@ function NuevoTicket() {
                     </div>
                 </main>
             </div>
-            <Footer />
+            <footer className="nuevo-ticket-pie">
+                <span>Mesa de Ayuda de Servicios del Campus - Universidad de Lima</span>
+                <span>soporte.campus@ulima.edu.pe - anexo 30500 - Términos - Privacidad</span>
+            </footer>
         </>
     );
 }
