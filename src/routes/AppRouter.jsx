@@ -9,6 +9,7 @@ import NuevoTicket from '../features/registro_seguimiento_tickets/NuevoTicket';
 import ConfirmacionTicket from '../features/registro_seguimiento_tickets/ConfirmacionTicket';
 import MisTickets from '../features/registro_seguimiento_tickets/MisTickets';
 import DetalleTicketUsuario from '../features/registro_seguimiento_tickets/DetalleTicketUsuario';
+import TicketCerradoEncuesta from '../features/registro_seguimiento_tickets/TicketCerradoEncuesta';
 
 import LayoutEncuestas from '../features/encuestas/LayoutEncuestas';
 import MisEncuestas from '../features/encuestas/MisEncuestas';
@@ -57,6 +58,8 @@ const AppRouter = () => {
         <Route path="/mis-tickets/nuevo" element={<NuevoTicket />} />
         <Route path="/mis-tickets/nuevo/registrado" element={<ConfirmacionTicket />} />
         <Route path="/mis-tickets/:codigo" element={<DetalleTicketUsuario />} />
+        <Route path="/mis-tickets/cerrado" element={<TicketCerradoEncuesta />} />
+        <Route path="/mis-tickets/cerrado/reabrir" element={<TicketCerradoEncuesta />} />
 
         {/* HU-6: Encuesta de satisfacción (Usuario). La ruta padre comparte las respuestas entre las vistas */}
         <Route element={

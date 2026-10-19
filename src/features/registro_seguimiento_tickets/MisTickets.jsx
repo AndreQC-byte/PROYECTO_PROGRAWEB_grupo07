@@ -5,6 +5,7 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
+import SinTickets from "./SinTickets";
 
 const POR_PAGINA = 8;
 const DESDE = "2026-08-01";
@@ -46,6 +47,8 @@ function MisTickets() {
     const [filtroFechas, setFiltroFechas] = useState(true);
     const [categoria, setCategoria] = useState("todas");
     const [pagina, setPagina] = useState(1);
+
+    if (tickets.length === 0) return <SinTickets />;
 
     const enCurso = tickets.filter((t) => !ESTADOS_TERMINADOS.includes(t.estado)).length;
 

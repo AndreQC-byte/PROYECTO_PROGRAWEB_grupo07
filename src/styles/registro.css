@@ -1,8 +1,7 @@
 /* registro.css
-   Estilos de la historia de usuario "Registro y seguimiento de tickets".
-   Un solo archivo para las cuatro pantallas. Cada pantalla tiene su clase raíz
-   (.nuevo-ticket, .mis-tickets, .confirmacion-ticket, .detalle-ticket), así que
-   ninguna regla afecta a otras pantallas. Etiquetas, botones, cabecera y sidebar
+   Un solo archivo para todas las pantallas y componentes de la historia. Cada pantalla
+   tiene su clase raíz (.nuevo-ticket, .mis-tickets, .confirmacion-ticket, .detalle-ticket),
+   Etiquetas, botones, cabecera y sidebar
    vienen de los componentes compartidos y de globals.css. */
 
 
@@ -15,17 +14,17 @@
 .mis-tickets-marco,
 .confirmacion-ticket-marco,
 .detalle-ticket-marco {
-  display: flex;
-  min-height: calc(100vh - var(--alto-cabecera) - var(--alto-pie));
+    display: flex;
+    min-height: calc(100vh - var(--alto-cabecera) - var(--alto-pie));
 }
 
 /* El sidebar del equipo trae su alto fijo escrito en el JSX, por eso !important */
-.nuevo-ticket-marco > aside,
-.mis-tickets-marco > aside,
-.confirmacion-ticket-marco > aside,
-.detalle-ticket-marco > aside {
-  flex: none;
-  height: auto !important;
+.nuevo-ticket-marco>aside,
+.mis-tickets-marco>aside,
+.confirmacion-ticket-marco>aside,
+.detalle-ticket-marco>aside {
+    flex: none;
+    height: auto !important;
 }
 
 /* Los Link del sidebar no definen estilo propio */
@@ -33,8 +32,8 @@
 .mis-tickets-marco aside a,
 .confirmacion-ticket-marco aside a,
 .detalle-ticket-marco aside a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
 
 /* ---------- Contenido principal (<main>) ---------- */
@@ -42,11 +41,11 @@
 .mis-tickets,
 .confirmacion-ticket,
 .detalle-ticket {
-  flex: 1;
-  min-width: 0;
-  max-width: var(--ancho-contenido);
-  margin: 0 auto;
-  padding: 24px;
+    flex: 1;
+    min-width: 0;
+    max-width: var(--ancho-contenido);
+    margin: 0 auto;
+    padding: 24px;
 }
 
 /* ---------- Pie ---------- */
@@ -54,15 +53,15 @@
 .mis-tickets-pie,
 .confirmacion-ticket-pie,
 .detalle-ticket-pie {
-  height: var(--alto-pie);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  font-size: var(--text-etiqueta);
-  color: var(--color-text-muted);
+    height: var(--alto-pie);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-etiqueta);
+    color: var(--color-text-muted);
 }
 
 /* ---------- Controles de formulario heredan la tipografía ---------- */
@@ -77,7 +76,7 @@
 .detalle-ticket input,
 .detalle-ticket button,
 .detalle-ticket textarea {
-  font: inherit;
+    font: inherit;
 }
 
 
@@ -86,77 +85,77 @@
    ===================================================================== */
 
 .nuevo-ticket h1 {
-  margin: 0 0 4px;
+    margin: 0 0 4px;
 }
 
 .nuevo-ticket #guia {
-  margin: 0;
-  font-size: var(--text-auxiliar);
-  line-height: var(--lh-auxiliar);
-  color: var(--color-text-muted);
+    margin: 0;
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    color: var(--color-text-muted);
 }
 
 /* ---------- Alerta de ticket duplicado ---------- */
 .nuevo-ticket #alerta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 16px 0;
-  padding: 12px;
-  background: #FBF3E4;
-  border: 1px solid var(--color-warning);
-  border-radius: var(--border-radius);
-  color: var(--color-warning);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px 0;
+    padding: 12px;
+    background: #FBF3E4;
+    border: 1px solid var(--color-warning);
+    border-radius: var(--border-radius);
+    color: var(--color-warning);
 }
 
 .nuevo-ticket #alerta p {
-  margin: 0;
+    margin: 0;
 }
 
 .nuevo-ticket #alerta a {
-  order: 2;
-  padding: 4px 12px;
-  border: 1px solid var(--color-warning);
-  border-radius: var(--border-radius);
+    order: 2;
+    padding: 4px 12px;
+    border: 1px solid var(--color-warning);
+    border-radius: var(--border-radius);
 }
 
 /* ---------- Estructura: formulario + columna lateral ---------- */
 .nuevo-ticket #llenardatos {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
 }
 
-.nuevo-ticket #llenardatos > form {
-  flex: 1;
+.nuevo-ticket #llenardatos>form {
+    flex: 1;
 }
 
 .nuevo-ticket .columna2 {
-  width: 230px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    width: 230px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .nuevo-ticket .card,
 .nuevo-ticket .infor {
-  padding: 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    padding: 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .nuevo-ticket #primerafila,
 .nuevo-ticket .segundafila {
-  display: flex;
-  gap: 16px;
+    display: flex;
+    gap: 16px;
 }
 
 .nuevo-ticket #catego,
 .nuevo-ticket #subcatego,
 .nuevo-ticket .ambi,
 .nuevo-ticket .prio {
-  flex: 1;
+    flex: 1;
 }
 
 .nuevo-ticket #catego,
@@ -166,126 +165,126 @@
 .nuevo-ticket .asunt,
 .nuevo-ticket .desc,
 .nuevo-ticket .evi {
-  margin-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 /* ---------- Campos ---------- */
 .nuevo-ticket label {
-  display: block;
-  margin-bottom: 4px;
-  font-family: var(--font-mono);
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
 }
 
 .nuevo-ticket input[type="text"],
 .nuevo-ticket select,
 .nuevo-ticket textarea {
-  width: 100%;
-  padding: 8px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    width: 100%;
+    padding: 8px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .nuevo-ticket textarea {
-  height: 150px;
-  resize: vertical;
+    height: 150px;
+    resize: vertical;
 }
 
 .nuevo-ticket small {
-  display: block;
-  margin-top: 4px;
-  font-size: var(--text-auxiliar);
-  line-height: var(--lh-auxiliar);
-  color: var(--color-text-muted);
+    display: block;
+    margin-top: 4px;
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    color: var(--color-text-muted);
 }
 
 .nuevo-ticket .inputconbtn {
-  position: relative;
+    position: relative;
 }
 
 .nuevo-ticket .inputconbtn button {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  border: 0;
-  background: none;
-  color: var(--color-primary);
-  cursor: pointer;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    border: 0;
+    background: none;
+    color: var(--color-primary);
+    cursor: pointer;
 }
 
 .nuevo-ticket .prioridad {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .nuevo-ticket .letritas {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 /* ---------- Evidencia ---------- */
 .nuevo-ticket .archivo {
-  position: relative;
-  padding: 24px;
-  text-align: center;
-  border: 1px dashed var(--color-border);
-  border-radius: var(--border-radius);
+    position: relative;
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .nuevo-ticket .archivo input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
 }
 
 /* ---------- Botones (usan btn-primario / btn-secundario de globals.css) ---------- */
 .nuevo-ticket .botoncitos {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
 }
 
 .nuevo-ticket .botoncitos button {
-  padding: 12px 16px;
-  cursor: pointer;
+    padding: 12px 16px;
+    cursor: pointer;
 }
 
 /* ---------- Columna lateral ---------- */
 .nuevo-ticket .columna2 h2 {
-  margin: 0 0 12px;
-  font-size: var(--text-subtitulo);
-  line-height: var(--lh-subtitulo);
+    margin: 0 0 12px;
+    font-size: var(--text-subtitulo);
+    line-height: var(--lh-subtitulo);
 }
 
 .nuevo-ticket .columna2 ul {
-  margin: 0;
-  padding-left: 16px;
-  list-style: disc;
+    margin: 0;
+    padding-left: 16px;
+    list-style: disc;
 }
 
 .nuevo-ticket .aviso {
-  padding: 12px;
-  background: var(--color-primary-soft);
-  border-left: 3px solid var(--color-primary);
-  border-radius: var(--border-radius);
-  color: var(--color-primary);
+    padding: 12px;
+    background: var(--color-primary-soft);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--border-radius);
+    color: var(--color-primary);
 }
 
 .nuevo-ticket .aviso p {
-  margin: 0 0 4px;
+    margin: 0 0 4px;
 }
 
 
@@ -295,179 +294,224 @@
 
 /* ---------- Cabecera de la pantalla ---------- */
 .mis-tickets .principal {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .mis-tickets h1 {
-  margin: 0 0 4px;
+    margin: 0 0 4px;
 }
 
 .mis-tickets #resumen {
-  margin: 0;
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  color: var(--color-text-muted);
+    margin: 0;
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    color: var(--color-text-muted);
 }
 
 /* El Link usa la clase btn-primario de globals.css */
 .mis-tickets .principal .btn-primario {
-  display: inline-block;
-  padding: 12px 16px;
-  text-decoration: none;
+    display: inline-block;
+    padding: 12px 16px;
+    text-decoration: none;
 }
 
 /* ---------- Filtros ---------- */
 .mis-tickets .filtros {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
 }
 
 /* margin/padding en 0 para anular la regla genérica ".filtros input, .filtros select" de globals.css */
 .mis-tickets #buscar {
-  width: 180px;
-  margin: 0;
-  padding: 8px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    width: 180px;
+    margin: 0;
+    padding: 8px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .mis-tickets .filtros select {
-  margin: 0;
-  padding: 8px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    margin: 0;
+    padding: 8px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .mis-tickets .opcion {
-  padding: 4px 8px;
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--border-radius);
+    padding: 4px 8px;
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--border-radius);
 }
 
 .mis-tickets .quitar {
-  margin: 0 0 0 8px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--color-primary);
-  cursor: pointer;
+    margin: 0 0 0 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-primary);
+    cursor: pointer;
 }
 
 .mis-tickets #limpiar {
-  font-size: var(--text-etiqueta);
-  color: var(--color-primary);
+    font-size: var(--text-etiqueta);
+    color: var(--color-primary);
 }
 
 /* ---------- Tabla ---------- */
 .mis-tickets .tabla {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 /* Los display de abajo anulan las reglas genéricas de table/tr/th/td de globals.css.
    Si borras esas reglas de globals.css, puedes quitar estos bloques. */
 .mis-tickets table {
-  display: table;
-  width: 100%;
-  margin: 0;
-  border-collapse: collapse;
-  font-size: var(--text-auxiliar);
+    display: table;
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: var(--text-auxiliar);
 }
 
 .mis-tickets thead {
-  display: table-header-group;
-  margin: 0;
+    display: table-header-group;
+    margin: 0;
 }
 
 .mis-tickets tbody {
-  display: table-row-group;
+    display: table-row-group;
 }
 
 .mis-tickets tr {
-  display: table-row;
-  border: 0;
+    display: table-row;
+    border: 0;
 }
 
 .mis-tickets th {
-  display: table-cell;
-  height: var(--alto-fila-tabla);
-  padding: 0 12px;
-  text-align: left;
-  font-family: var(--font-mono);
-  font-size: var(--text-etiqueta);
-  font-weight: normal;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+    display: table-cell;
+    height: var(--alto-fila-tabla);
+    padding: 0 12px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
 }
 
 .mis-tickets td {
-  display: table-cell;
-  height: var(--alto-fila-tabla);
-  padding: 0 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--color-border);
+    display: table-cell;
+    height: var(--alto-fila-tabla);
+    padding: 0 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .mis-tickets .codigoticket {
-  font-family: var(--font-mono);
-  font-size: var(--text-etiqueta);
-  font-weight: 500;
-  color: var(--color-primary);
-  white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    font-weight: 500;
+    color: var(--color-primary);
+    white-space: nowrap;
 }
 
 .mis-tickets .ambiente {
-  font-family: var(--font-mono);
-  font-weight: bold;
+    font-family: var(--font-mono);
+    font-weight: bold;
 }
 
 /* ---------- Pie de tabla y paginación ---------- */
 .mis-tickets .resumentabla {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  color: var(--color-text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    color: var(--color-text-muted);
 }
 
 .mis-tickets .pagina {
-  display: flex;
-  gap: 4px;
+    display: flex;
+    gap: 4px;
 }
 
 .mis-tickets .pagina button {
-  padding: 4px 12px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  cursor: pointer;
+    padding: 4px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
 }
 
 .mis-tickets .pagina button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .mis-tickets .pagina .actual {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-surface);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-surface);
+}
+
+/* ---------- Estado vacío: sin tickets registrados (SinTickets.jsx) ---------- */
+.mis-tickets .vacio {
+    margin-top: 16px;
+    padding: 48px 24px;
+    text-align: center;
+}
+
+.mis-tickets .iconovacio {
+    display: inline-block;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 16px;
+    background: var(--color-primary-soft);
+    border: 1px dashed var(--color-primary);
+    border-radius: var(--border-radius);
+}
+
+.mis-tickets .vacio h2 {
+    margin: 0 0 8px;
+    font-size: var(--text-titulo-seccion);
+    line-height: var(--lh-titulo-seccion);
+}
+
+.mis-tickets .vacio p {
+    margin: 0 0 24px;
+    color: var(--color-text-muted);
+}
+
+.mis-tickets .vacio .btn-primario {
+    display: inline-block;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+/* ---------- Notificación de error (debajo del estado vacío) ---------- */
+.mis-tickets .notificacion-error {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: #FBEAE8;
+    border: 1px solid var(--color-danger);
+    border-radius: var(--border-radius);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
+    color: var(--color-danger);
 }
 
 
@@ -476,139 +520,139 @@
    ===================================================================== */
 
 .confirmacion-ticket {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .confirmacion-ticket .confirmacion {
-  width: 920px;
-  max-width: 100%;
-  padding: 48px;
-  text-align: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    width: 920px;
+    max-width: 100%;
+    padding: 48px;
+    text-align: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 /* ---------- Check ---------- */
 .confirmacion-ticket .check {
-  position: relative;
-  display: inline-block;
-  width: 56px;
-  height: 56px;
-  background: #E8F3EC;
-  border: 1px solid var(--color-success);
-  border-radius: var(--border-radius);
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 56px;
+    background: #E8F3EC;
+    border: 1px solid var(--color-success);
+    border-radius: var(--border-radius);
 }
 
 .confirmacion-ticket .check::before {
-  content: "";
-  position: absolute;
-  left: 20px;
-  top: 8px;
-  width: 12px;
-  height: 24px;
-  border-right: 2px solid var(--color-success);
-  border-bottom: 2px solid var(--color-success);
-  transform: rotate(45deg);
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 8px;
+    width: 12px;
+    height: 24px;
+    border-right: 2px solid var(--color-success);
+    border-bottom: 2px solid var(--color-success);
+    transform: rotate(45deg);
 }
 
 .confirmacion-ticket h1 {
-  margin: 16px 0 8px;
+    margin: 16px 0 8px;
 }
 
 .confirmacion-ticket #texto {
-  margin: 0 0 24px;
-  color: var(--color-text-muted);
+    margin: 0 0 24px;
+    color: var(--color-text-muted);
 }
 
 /* ---------- Código del ticket ---------- */
 .confirmacion-ticket .codigo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 16px 32px;
-  background: var(--color-primary-soft);
-  border: 2px solid var(--color-primary);
-  border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 16px 32px;
+    background: var(--color-primary-soft);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--border-radius);
 }
 
 .confirmacion-ticket #numero {
-  font-family: var(--font-mono);
-  font-size: var(--text-titulo-pantalla);
-  line-height: var(--lh-titulo-pantalla);
-  color: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: var(--text-titulo-pantalla);
+    line-height: var(--lh-titulo-pantalla);
+    color: var(--color-primary);
 }
 
 .confirmacion-ticket #copiar {
-  padding: 4px 12px;
-  font-size: var(--text-auxiliar);
-  line-height: var(--lh-auxiliar);
-  background: var(--color-surface);
-  border: 1px solid var(--color-primary);
-  border-radius: var(--border-radius);
-  color: var(--color-primary);
-  cursor: pointer;
+    padding: 4px 12px;
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    background: var(--color-surface);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--border-radius);
+    color: var(--color-primary);
+    cursor: pointer;
 }
 
 /* ---------- Tarjetas de datos ---------- */
 .confirmacion-ticket .datos {
-  display: flex;
-  gap: 16px;
-  margin: 24px 0;
-  text-align: left;
+    display: flex;
+    gap: 16px;
+    margin: 24px 0;
+    text-align: left;
 }
 
 .confirmacion-ticket .asig,
 .confirmacion-ticket .horario,
 .confirmacion-ticket .amb {
-  flex: 1;
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    flex: 1;
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .confirmacion-ticket small {
-  display: block;
-  margin: 0 0 8px;
-  font-family: var(--font-mono);
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+    display: block;
+    margin: 0 0 8px;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
 }
 
 .confirmacion-ticket .datos p {
-  margin: 0;
-  font-weight: 500;
+    margin: 0;
+    font-weight: 500;
 }
 
 /* Separación entre las etiquetas de prioridad y estado */
-.confirmacion-ticket .asig > span {
-  display: inline-block;
-  margin: 0 4px 4px 0;
+.confirmacion-ticket .asig>span {
+    display: inline-block;
+    margin: 0 4px 4px 0;
 }
 
 .confirmacion-ticket #place {
-  font-family: var(--font-mono);
+    font-family: var(--font-mono);
 }
 
 /* ---------- Botones (usan btn-primario / btn-secundario de globals.css) ---------- */
 .confirmacion-ticket .botoncitos {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
 }
 
 .confirmacion-ticket .botoncitos a {
-  display: inline-block;
-  padding: 12px 16px;
-  text-decoration: none;
+    display: inline-block;
+    padding: 12px 16px;
+    text-decoration: none;
 }
 
 
@@ -618,275 +662,468 @@
 
 /* ---------- Ruta y cabecera del ticket ---------- */
 .detalle-ticket #ticketselecc {
-  margin-bottom: 8px;
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  color: var(--color-text-muted);
+    margin-bottom: 8px;
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    color: var(--color-text-muted);
 }
 
 .detalle-ticket #ticketselecc a {
-  color: var(--color-text-muted);
-  text-decoration: none;
+    color: var(--color-text-muted);
+    text-decoration: none;
 }
 
 .detalle-ticket #ticketselecc a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .detalle-ticket .contenido {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .detalle-ticket .codigoestado {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .detalle-ticket #codigo {
-  font-family: var(--font-mono);
-  font-size: var(--text-titulo-pantalla);
-  line-height: var(--lh-titulo-pantalla);
-  font-weight: 700;
-  color: var(--color-primary);
+    font-family: var(--font-mono);
+    font-size: var(--text-titulo-pantalla);
+    line-height: var(--lh-titulo-pantalla);
+    font-weight: 700;
+    color: var(--color-primary);
 }
 
 /* Botón "Agregar información": outlined, no relleno */
 .detalle-ticket .botonagregar {
-  padding: 8px 16px;
-  border: 1px solid var(--color-primary);
-  background: var(--color-surface);
-  color: var(--color-primary);
-  font-weight: bold;
-  cursor: pointer;
+    padding: 8px 16px;
+    border: 1px solid var(--color-primary);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: bold;
+    cursor: pointer;
 }
 
 .detalle-ticket #asunto {
-  margin: 20px 0;
-  font-size: var(--text-titulo-seccion);
-  line-height: var(--lh-titulo-seccion);
-  font-weight: 700;
+    margin: 20px 0;
+    font-size: var(--text-titulo-seccion);
+    line-height: var(--lh-titulo-seccion);
+    font-weight: 700;
 }
 
 /* ---------- Dos columnas ---------- */
 .detalle-ticket .columnas {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 24px;
-  align-items: start;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
 }
 
 .detalle-ticket .lateral {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .detalle-ticket .dt-bitacora,
 .detalle-ticket .reporte,
 .detalle-ticket .lineatemp {
-  padding: 20px 24px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    padding: 20px 24px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .detalle-ticket h3 {
-  margin-bottom: 16px;
-  font-size: var(--text-titulo-seccion);
-  line-height: var(--lh-titulo-seccion);
+    margin-bottom: 16px;
+    font-size: var(--text-titulo-seccion);
+    line-height: var(--lh-titulo-seccion);
 }
 
 /* ---------- Bitácora ---------- */
 .detalle-ticket .mensaje {
-  margin-bottom: 16px;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: var(--text-cuerpo);
-  line-height: var(--lh-cuerpo);
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
 }
 
 .detalle-ticket .persona {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .detalle-ticket .persona strong {
-  font-size: var(--text-cuerpo);
-  line-height: var(--lh-cuerpo);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
 }
 
 .detalle-ticket .persona small {
-  font-size: var(--text-auxiliar);
-  line-height: var(--lh-auxiliar);
-  color: var(--color-text-muted);
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    color: var(--color-text-muted);
 }
 
 .detalle-ticket .avatar {
-  width: 32px;
-  height: 32px;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius);
-  background: var(--color-accent);
-  color: #fff;
-  font-family: var(--font-mono);
-  font-size: var(--text-etiqueta);
-  font-weight: bold;
+    width: 32px;
+    height: 32px;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius);
+    background: var(--color-accent);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    font-weight: bold;
 }
 
 .detalle-ticket .avatar.azul {
-  background: var(--color-primary-dark);
+    background: var(--color-primary-dark);
 }
 
 /* ---------- Formulario de comentario ---------- */
 .detalle-ticket form {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
 }
 
 .detalle-ticket label {
-  display: block;
-  margin-bottom: 8px;
-  font-family: var(--font-mono);
-  font-size: var(--text-etiqueta);
-  line-height: var(--lh-etiqueta);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
 }
 
 .detalle-ticket #comentario {
-  width: 100%;
-  height: 108px;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: var(--text-cuerpo);
-  line-height: var(--lh-cuerpo);
-  resize: vertical;
+    width: 100%;
+    height: 108px;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
+    resize: vertical;
 }
 
 .detalle-ticket .enviar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
 }
 
 .detalle-ticket .enviar button {
-  padding: 8px 16px;
-  font-weight: 700;
-  cursor: pointer;
+    padding: 8px 16px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .detalle-ticket .enviar small {
-  font-size: var(--text-auxiliar);
-  line-height: var(--lh-auxiliar);
-  color: var(--color-text-muted);
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    color: var(--color-text-muted);
 }
 
 /* ---------- Datos del reporte ---------- */
 .detalle-ticket .fila {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 32px;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--color-border);
-  font-size: var(--text-cuerpo);
-  line-height: var(--lh-cuerpo);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
 }
 
 .detalle-ticket .fila:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .detalle-ticket .fila span:first-child {
-  color: var(--color-text-muted);
+    color: var(--color-text-muted);
 }
 
 /* ---------- Línea de tiempo ---------- */
 .detalle-ticket .tiempo {
-  list-style: none;
+    list-style: none;
 }
 
 .detalle-ticket .tiempo li {
-  position: relative;
-  margin-bottom: 16px;
-  padding-left: 16px;
+    position: relative;
+    margin-bottom: 16px;
+    padding-left: 16px;
 }
 
 .detalle-ticket .tiempo li:last-child {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .detalle-ticket .tiempo li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 7px;
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--color-border);
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--color-border);
 }
 
 .detalle-ticket .tiempo strong,
 .detalle-ticket .tiempo small {
-  display: block;
+    display: block;
 }
 
 .detalle-ticket .tiempo strong {
-  font-size: var(--text-cuerpo);
-  line-height: var(--lh-cuerpo);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
 }
 
 .detalle-ticket .tiempo small {
-  font-size: var(--text-auxiliar);
-  line-height: var(--lh-auxiliar);
-  color: var(--color-text-muted);
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    color: var(--color-text-muted);
 }
 
 /* El JSX usa hito-abierto, hito-asignado, hito-actual y hito-pendiente */
 .detalle-ticket .hito-abierto::before,
 .detalle-ticket .hito-asignado::before {
-  background: var(--color-success);
+    background: var(--color-success);
 }
 
 .detalle-ticket .hito-actual::before {
-  background: var(--color-warning);
+    background: var(--color-warning);
 }
 
 .detalle-ticket .hito-pendiente::before {
-  background: var(--color-border);
+    background: var(--color-border);
 }
 
 /* ---------- Ticket no encontrado ---------- */
 .detalle-ticket .sin-ticket {
-  padding: 48px 24px;
-  text-align: center;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+    padding: 48px 24px;
+    text-align: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
 }
 
 .detalle-ticket .sin-ticket p {
-  margin: 8px 0 16px;
-  color: var(--color-text-muted);
+    margin: 8px 0 16px;
+    color: var(--color-text-muted);
 }
 
 .detalle-ticket .sin-ticket a {
-  display: inline-block;
-  padding: 8px 16px;
+    display: inline-block;
+    padding: 8px 16px;
+}
+
+
+/* =====================================================================
+   TICKET CERRADO CON ENCUESTA  (.ticket-cerrado-encuesta)
+   Tarjeta que se muestra al abrir un ticket en estado "Cerrado".
+   ===================================================================== */
+
+.ticket-cerrado-encuesta {
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto 16px;
+    padding: 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+}
+
+.ticket-cerrado-encuesta .tce-estado {
+    margin: 0 0 16px;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    letter-spacing: 1px;
+    color: var(--color-text-muted);
+}
+
+.ticket-cerrado-encuesta .tce-codigo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 16px;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+/* ---------- Avisos: resuelto (verde) y encuesta pendiente (naranja) ---------- */
+.ticket-cerrado-encuesta .tce-aviso {
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: var(--border-radius);
+    font-size: var(--text-cuerpo);
+    line-height: var(--lh-cuerpo);
+}
+
+.ticket-cerrado-encuesta .tce-aviso-resuelto {
+    background: var(--color-surface);
+    border: 1px solid var(--color-success);
+    color: var(--color-success);
+}
+
+.ticket-cerrado-encuesta .tce-aviso-pendiente {
+    background: #FBF3E4;
+    border: 1px solid var(--color-warning);
+    color: var(--color-warning);
+}
+
+/* ---------- Botones (btn-primario viene de globals.css) ---------- */
+.ticket-cerrado-encuesta .tce-botones {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.ticket-cerrado-encuesta .tce-botones button {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* Reabrir: rojo con borde, no relleno (btn-destructivo es relleno) */
+.ticket-cerrado-encuesta .btn-reabrir {
+    background: var(--color-surface);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+}
+
+.ticket-cerrado-encuesta .btn-reabrir:hover {
+    background: #FBEAE8;
+}
+
+
+/* =====================================================================
+   MODAL REABRIR TICKET  (.mr-fondo / .mr-ventana)
+   Ventana emergente que se abre desde TicketCerradoEncuesta.
+   ===================================================================== */
+
+.mr-fondo {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.mr-ventana {
+    width: 100%;
+    max-width: 440px;
+    padding: 24px;
+    background: var(--color-surface);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mr-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.mr-titulo h2 {
+    font-size: var(--text-titulo-seccion);
+    line-height: var(--lh-titulo-seccion);
+}
+
+.mr-cerrar {
+    border: 0;
+    background: none;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+.mr-cerrar:hover {
+    color: var(--color-text);
+}
+
+.mr-plazo {
+    margin: 0 0 16px;
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    color: var(--color-text-muted);
+}
+
+.mr-ventana label {
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: var(--text-etiqueta);
+    line-height: var(--lh-etiqueta);
+    letter-spacing: 1px;
+    color: var(--color-text-muted);
+}
+
+.mr-ventana textarea {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    font: inherit;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    resize: vertical;
+}
+
+.mr-aviso {
+    margin: 12px 0 0;
+    padding: 12px;
+    font-size: var(--text-auxiliar);
+    line-height: var(--lh-auxiliar);
+    background: var(--color-primary-soft);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--border-radius);
+    color: var(--color-primary);
+}
+
+.mr-botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.mr-botones button {
+    padding: 12px 16px;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.mr-botones button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 
@@ -894,7 +1131,7 @@
    RESPONSIVO
    ===================================================================== */
 @media (max-width: 900px) {
-  .detalle-ticket .columnas {
-    grid-template-columns: 1fr;
-  }
+    .detalle-ticket .columnas {
+        grid-template-columns: 1fr;
+    }
 }
