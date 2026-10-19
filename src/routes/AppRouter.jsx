@@ -10,6 +10,11 @@ import ConfirmacionTicket from '../features/registro_seguimiento_tickets/Confirm
 import MisTickets from '../features/registro_seguimiento_tickets/MisTickets';
 import DetalleTicketUsuario from '../features/registro_seguimiento_tickets/DetalleTicketUsuario';
 
+import LayoutEncuestas from '../features/encuestas/LayoutEncuestas';
+import MisEncuestas from '../features/encuestas/MisEncuestas';
+import EncuestaPendiente from '../features/encuestas/EncuestaPendiente';
+import ResponderEncuesta from '../features/encuestas/ResponderEncuesta';
+import SatisfaccionSupervisor from '../features/encuestas/SatisfaccionSupervisor';
 // Importaciones simuladas para las demás historias en desarrollo
 const VistaTemporal = ({ nombre }) => <div className="contenedor-principal"><h2>Vista en desarrollo: {nombre}</h2></div>;
 const AccesoDenegado = () => <div className="contenedor-principal"><h2>403 - No tienes permiso para ver esta sección</h2></div>; // Vista requerida por HU-1[cite: 3]
@@ -53,6 +58,17 @@ const AppRouter = () => {
         <Route path="/mis-tickets/nuevo/registrado" element={<ConfirmacionTicket />} />
         <Route path="/mis-tickets/:codigo" element={<DetalleTicketUsuario />} />
 
+        {/* HU-6: Encuesta de satisfacción (Usuario). La ruta padre comparte las respuestas entre las vistas */}
+        <Route element={
+          <RutaProtegida rolesPermitidos={['Usuario']}>
+            <LayoutEncuestas />
+          </RutaProtegida>
+        }>
+          <Route path="/encuestas" element={<MisEncuestas />} />
+          <Route path="/encuestas/pendiente" element={<EncuestaPendiente />} />
+          <Route path="/encuestas/:ticketId" element={<ResponderEncuesta />} />
+        </Route>
+
         {/* Rutas de Técnico[cite: 4] */}
         <Route path="/tecnico/bandeja" element={
           <RutaProtegida rolesPermitidos={['Técnico']}>
@@ -81,6 +97,15 @@ const AppRouter = () => {
             <ListaCategorias />
           </RutaProtegida>
         } />
+
+        {/* HU-6: satisfacción por técnico y categoría (solo Supervisor) */}
+        <Route element={
+          <RutaProtegida rolesPermitidos={['Supervisor']}>
+            <LayoutEncuestas />
+          </RutaProtegida>
+        }>
+          <Route path="/supervisor/satisfaccion" element={<SatisfaccionSupervisor />} />
+        </Route>
 
         {/* Rutas de Error */}
         <Route path="/403" element={<AccesoDenegado />} />
