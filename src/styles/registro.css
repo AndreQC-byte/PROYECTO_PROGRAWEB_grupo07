@@ -2,8 +2,8 @@
    Estilos de la historia de usuario "Registro y seguimiento de tickets".
    Un solo archivo para las cuatro pantallas. Cada pantalla tiene su clase raíz
    (.nuevo-ticket, .mis-tickets, .confirmacion-ticket, .detalle-ticket), así que
-   ninguna regla afecta a otras pantallas. Etiquetas, botones, cabecera y sidebar
-   vienen de los componentes compartidos y de globals.css. */
+   ninguna regla afecta a otras pantallas. Etiquetas, botones, cabecera, sidebar
+   y pie vienen de los componentes compartidos y de globals.css. */
 
 
 /* =====================================================================
@@ -49,11 +49,13 @@
     padding: 24px;
 }
 
-/* ---------- Pie ---------- */
-.nuevo-ticket-pie,
-.mis-tickets-pie,
-.confirmacion-ticket-pie,
-.detalle-ticket-pie {
+/* ---------- Pie (componente Footer, que no trae clase propia) ----------
+   El selector "+ footer" solo afecta al pie que va justo después del marco
+   de estas cuatro pantallas, así que no toca el pie de nadie más. */
+.nuevo-ticket-marco+footer,
+.mis-tickets-marco+footer,
+.confirmacion-ticket-marco+footer,
+.detalle-ticket-marco+footer {
     height: var(--alto-pie);
     display: flex;
     align-items: center;

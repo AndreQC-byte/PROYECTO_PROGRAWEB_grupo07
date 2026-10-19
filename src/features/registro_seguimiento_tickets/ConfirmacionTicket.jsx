@@ -5,6 +5,7 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
+import Footer from "../../components/layouts/Footer";
 
 function ConfirmacionTicket() {
   const { state } = useLocation();
@@ -71,10 +72,7 @@ function ConfirmacionTicket() {
           </div>
         </main>
       </div>
-      <footer className="confirmacion-ticket-pie">
-        <span>Mesa de Ayuda · Campus Ulima</span>
-        <span>v1.0</span>
-      </footer>
+      <Footer />
     </>
   );
 }

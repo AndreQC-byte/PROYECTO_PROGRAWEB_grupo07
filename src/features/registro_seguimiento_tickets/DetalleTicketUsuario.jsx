@@ -5,6 +5,7 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
+import Footer from "../../components/layouts/Footer";
 
 // Usuario de PRUEBA que escribe los comentarios: luego saldrá de la sesión
 const USUARIO_ACTUAL = {
@@ -235,10 +236,7 @@ function DetalleTicketUsuario() {
                     )}
                 </main>
             </div>
-            <footer className="detalle-ticket-pie">
-                <span>Mesa de Ayuda · Campus Ulima</span>
-                <span>v1.0</span>
-            </footer>
+            <Footer />
         </>
     );
 }

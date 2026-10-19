@@ -5,6 +5,7 @@ import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
+import Footer from "../../components/layouts/Footer";
 
 const POR_PAGINA = 8;
 const DESDE = "2026-08-01";
@@ -241,10 +242,7 @@ function MisTickets() {
                     </div>
                 </main>
             </div>
-            <footer className="mis-tickets-pie">
-                <span>Mesa de Ayuda · Campus Ulima</span>
-                <span>v1.0</span>
-            </footer>
+            <Footer />
         </>
     );
 }

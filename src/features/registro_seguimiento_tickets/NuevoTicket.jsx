@@ -4,6 +4,7 @@ import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
 import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
+import Footer from "../../components/layouts/Footer";
 
 const subcategoriasPorCategoria = {
     "Audiovisuales": ["Proyector no enciende", "Imagen distorsionada"],
@@ -218,10 +219,7 @@ function NuevoTicket() {
                     </div>
                 </main>
             </div>
-            <footer className="nuevo-ticket-pie">
-                <span>Mesa de Ayuda · Campus Ulima</span>
-                <span>v1.0</span>
-            </footer>
+            <Footer />
         </>
     );
 }
