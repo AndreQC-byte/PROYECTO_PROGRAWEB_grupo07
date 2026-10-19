@@ -1,4 +1,6 @@
 @import './theme.css';
+@import './atencion.css'; /* HU-5: Atención y cierre */
+@import './encuestas.css'; /* HU-6: Encuesta de satisfacción */
 
 /* Reseteo básico y aplicación de tipografía */
 * {
@@ -74,6 +76,30 @@ button, input, select, textarea, .tarjeta-ticket, .etiqueta-estado {
   background-color: var(--color-danger);
   color: var(--color-surface);
   border: none;
+}
+
+/* Enlaces de la navegación lateral compartida (NavegacionSideBar.jsx) */
+.nav-enlace {
+  display: block;
+  padding: 8px 12px;
+  border-left: 2px solid transparent;
+  border-radius: var(--border-radius);
+  color: var(--color-text);
+  font-size: var(--text-auxiliar);
+  line-height: var(--lh-auxiliar);
+  text-decoration: none;
+}
+
+.nav-enlace:hover {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.nav-enlace-activo {
+  background-color: var(--color-primary-soft);
+  border-left-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 :root {

@@ -1,0 +1,21 @@
+/* Bitácora compartida. Medidas en múltiplos de 4 px, radio de 4 px y sin sombras (sistema de diseño). */
+.bitacora { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius); padding: 16px; }
+.bitacora-cabecera { display: flex; justify-content: space-between; align-items: center; }
+.bitacora-cabecera h3 { font-size: var(--text-subtitulo); line-height: var(--lh-subtitulo); }
+.bitacora-filtro { display: flex; align-items: center; gap: 8px; font-size: var(--text-auxiliar); color: var(--color-text-muted); }
+.bitacora-filtro select { padding: 4px 8px; border: 1px solid var(--color-border); background: var(--color-surface); }
+
+.bitacora-lista { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+.bitacora-vacio { padding: 16px; text-align: center; color: var(--color-text-muted); font-size: var(--text-auxiliar); }
+.bitacora-entrada { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--border-radius); }
+.bitacora-entrada-interna { background: #FBF3E4; border-color: var(--color-warning); }
+.bitacora-contenido { flex: 1; font-size: var(--text-auxiliar); line-height: var(--lh-auxiliar); }
+.bitacora-encabezado { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+.bitacora-meta { color: var(--color-text-muted); }
+.bitacora-tipo-publica, .bitacora-tipo-interna { font-size: var(--text-etiqueta); line-height: var(--lh-etiqueta); font-weight: 600; letter-spacing: 0.5px; white-space: nowrap; }
+.bitacora-tipo-publica { color: var(--color-info); }
+.bitacora-tipo-interna { color: var(--color-warning); }
+
+.bitacora-avatar { width: 28px; height: 28px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: var(--border-radius); background: var(--color-accent); color: #fff; font-size: var(--text-etiqueta); font-weight: 600; }
+.bitacora-avatar-tecnico { background: var(--color-primary); }
+.bitacora-avatar-supervisor { background: var(--color-primary-dark); }
