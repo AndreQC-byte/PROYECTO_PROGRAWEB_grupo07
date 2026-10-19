@@ -1,0 +1,287 @@
+/* HU-1 · Cuenta y acceso — estilos de las pantallas públicas.
+   Todo con prefijo "auth-" para no chocar con las otras historias.
+   Colores, tamaños y medidas vienen de theme.css. */
+
+.auth-pagina {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+}
+
+.auth-wrap {
+  width: 100%;
+  max-width: var(--ancho-contenido);
+  margin: 0 auto;
+}
+
+.auth-principal {
+  flex: 1;
+  padding: 32px 0 48px;
+}
+
+/* Botones: se usan junto a btn-primario / btn-secundario de globals.css */
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 16px;
+  font: 500 var(--text-auxiliar) / var(--lh-auxiliar) var(--font-principal);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.auth-btn.btn-primario {
+  border: 1px solid var(--color-primary);
+}
+
+.auth-btn.btn-primario:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.auth-btn.btn-secundario {
+  border-color: var(--color-primary);
+}
+
+.auth-btn.btn-secundario:hover {
+  background-color: var(--color-primary-soft);
+}
+
+.auth-acciones {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Cabecera pública */
+.auth-cabecera {
+  height: var(--alto-cabecera);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.auth-cabecera .auth-wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: var(--alto-cabecera);
+}
+
+.auth-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.auth-marca-sub {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.auth-logo {
+  width: 20px;
+  height: 20px;
+  background-color: var(--color-primary);
+  border-radius: var(--border-radius);
+}
+
+.auth-nav {
+  display: flex;
+  gap: 24px;
+  font-size: var(--text-auxiliar);
+}
+
+.auth-nav a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.auth-nav a:hover {
+  text-decoration: underline;
+}
+
+.auth-cabecera-acciones {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+/* Tarjeta base */
+.auth-tarjeta {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: 24px;
+}
+
+/* Sección principal de la landing */
+.auth-hero {
+  display: grid;
+  grid-template-columns: 1fr 520px;
+  gap: 32px;
+  padding: 32px;
+}
+
+.auth-sobretitulo {
+  font-size: var(--text-etiqueta);
+  line-height: var(--lh-etiqueta);
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+}
+
+.auth-hero h1 {
+  max-width: 480px;
+  margin: 12px 0;
+}
+
+.auth-hero-descripcion {
+  color: var(--color-text-muted);
+  max-width: 520px;
+  margin-bottom: 24px;
+}
+
+.auth-foto {
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  border: 1px solid var(--color-border);
+  background: repeating-linear-gradient(135deg, var(--color-bg) 0 12px, var(--color-primary-soft) 12px 24px);
+  color: var(--color-text-muted);
+  font: var(--text-etiqueta) / var(--lh-etiqueta) var(--font-mono);
+}
+
+/* Cuatro tarjetas informativas */
+.auth-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.auth-info .auth-tarjeta {
+  padding: 16px;
+  border-top: 2px solid var(--color-primary);
+}
+
+.auth-info h3 {
+  font-size: var(--text-cuerpo);
+  line-height: var(--lh-cuerpo);
+  font-weight: 600;
+}
+
+.auth-info p {
+  font-size: var(--text-auxiliar);
+  line-height: var(--lh-auxiliar);
+  color: var(--color-text-muted);
+}
+
+.auth-info .auth-tarjeta-emergencia {
+  background-color: var(--color-primary-soft);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.auth-info .auth-tarjeta-emergencia p {
+  color: var(--color-primary);
+}
+
+/* Pie público */
+.auth-pie {
+  --pie-texto: #C9D6E2;
+  --pie-tenue: #8FA6BB;
+  background-color: var(--color-primary-dark);
+  color: var(--color-surface);
+  padding: 32px 0 24px;
+  font-size: var(--text-auxiliar);
+  line-height: var(--lh-auxiliar);
+}
+
+.auth-pie .auth-wrap {
+  display: grid;
+  grid-template-columns: 360px 200px 280px 1fr;
+  gap: 24px;
+}
+
+.auth-pie p {
+  color: var(--pie-texto);
+  margin-top: 8px;
+}
+
+.auth-pie h4 {
+  font-size: var(--text-etiqueta);
+  line-height: var(--lh-etiqueta);
+  letter-spacing: 0.08em;
+  color: var(--pie-tenue);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.auth-pie a {
+  display: block;
+  color: var(--color-surface);
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+
+.auth-pie a:hover {
+  text-decoration: underline;
+}
+
+.auth-pie-legal {
+  text-align: right;
+  color: var(--pie-tenue);
+  align-self: end;
+  font-size: var(--text-etiqueta);
+}
+
+.auth-pie .auth-pie-legal a {
+  display: inline;
+  color: var(--pie-tenue);
+  margin-bottom: 0;
+}
+
+/* Responsivo */
+@media (max-width: 1248px) {
+  .auth-wrap {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 960px) {
+  .auth-nav {
+    display: none;
+  }
+
+  .auth-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-info {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .auth-pie .auth-wrap {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .auth-pie-legal {
+    text-align: left;
+  }
+}
+
+@media (max-width: 560px) {
+  .auth-marca-sub {
+    display: none;
+  }
+
+  .auth-info,
+  .auth-pie .auth-wrap {
+    grid-template-columns: 1fr;
+  }
+}

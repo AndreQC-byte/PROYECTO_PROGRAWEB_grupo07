@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
+import LayoutPublico from '../features/auth/LayoutPublico';
+import Landing from '../features/auth/Landing';
 import ListaCategorias from '../features/catalogo/ListaCategorias';
 import LayoutAtencion from '../features/atencion_cierre_tickets/LayoutAtencion';
 import DetalleTicket from '../features/atencion_cierre_tickets/DetalleTicket';
@@ -38,8 +40,10 @@ const AppRouter = () => {
       {/* Aquí irá el <Encabezado /> y <NavegacionSidebar /> del módulo compartido[cite: 3] */}
       <Routes>
         {/* Rutas de Visitante[cite: 4] */}
-        <Route path="/" element={<VistaTemporal nombre="Landing Pública" />} />
-        <Route path="/login" element={<VistaTemporal nombre="Inicio de Sesión" />} />
+        <Route element={<LayoutPublico />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<VistaTemporal nombre="Inicio de Sesión" />} />
+        </Route>
 
         {/* Redirección a la vista principal según el rol (Requerimiento HU-1)[cite: 3] */}
         <Route path="/dashboard" element={
