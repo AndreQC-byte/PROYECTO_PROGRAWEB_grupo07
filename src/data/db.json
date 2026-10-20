@@ -10,10 +10,7 @@
       "unidad": "Ingeniería de Sistemas",
       "ambienteHabitual": "A-201",
       "estado": "Activo",
-      "contrasena": "camila123",
-      "intentosFallidos": 0,
-      "bloqueadoHasta": null,
-      "motivoBloqueo": null
+      "contrasena": "camila123"
     },
     {
       "id": "USR-002",
@@ -24,10 +21,7 @@
       "telefono": "951 220 874",
       "especialidades": ["CAT-001", "CAT-003"],
       "estado": "Activo",
-      "contrasena": "julio123",
-      "intentosFallidos": 0,
-      "bloqueadoHasta": null,
-      "motivoBloqueo": null
+      "contrasena": "julio123"
       
     },
      {
@@ -37,10 +31,7 @@
       "correo": "lmendoza@ulima.edu.pe",
       "rol": "Supervisor",
       "estado": "Activo",
-      "contrasena": "lucia123",
-      "intentosFallidos": 0,
-      "bloqueadoHasta": null,
-      "motivoBloqueo": null
+      "contrasena": "lucia123"
     },
     {
       "id": "USR-004",
@@ -50,7 +41,8 @@
       "rol": "Técnico",
       "telefono": "944 318 205",
       "especialidades": ["CAT-003"],
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
     },
     {
       "id": "USR-005",
@@ -60,7 +52,8 @@
       "rol": "Técnico",
       "telefono": "962 774 130",
       "especialidades": ["CAT-004"],
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
     },
     {
       "id": "USR-006",
@@ -70,7 +63,8 @@
       "rol": "Técnico",
       "telefono": "958 402 611",
       "especialidades": ["CAT-006"],
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
     },
     {
       "id": "USR-007",
@@ -80,7 +74,8 @@
       "rol": "Técnico",
       "telefono": "937 150 846",
       "especialidades": ["CAT-005"],
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
     },
     {
       "id": "USR-008",
@@ -90,7 +85,8 @@
       "rol": "Técnico",
       "telefono": "981 236 457",
       "especialidades": ["CAT-002"],
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
     },
     {
       "id": "USR-009",
@@ -101,7 +97,8 @@
       "telefono": "912 345 678",
       "unidad": "Administración",
       "ambienteHabitual": "H-210",
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
     },
     {
       "id": "USR-010",
@@ -112,7 +109,9 @@
       "telefono": "923 456 789",
       "unidad": "Psicología",
       "ambienteHabitual": "E-304",
-      "estado": "Activo"
+      "estado": "Activo",
+      "contrasena": "Ulima2026"
+
     }
   ],
   "categorias": [

@@ -3,7 +3,11 @@ import db from '../../data/db.json';
 const MAX_INTENTOS = 5;
 const MINUTOS_BLOQUEO = 15;
 
-const usuarios = db.usuarios.map((u) => ({ ...u }));
+const usuarios = db.usuarios.map((u) => ({
+  ...u,
+  intentosFallidos: u.intentosFallidos ?? 0,
+  bloqueadoHasta: u.bloqueadoHasta ?? null,
+}));
 
 const formatearHora = (fecha) =>
   fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
@@ -74,4 +78,12 @@ export const iniciarSesion = (correo, contrasena) => {
   // 4. Todo bien: se reinician los intentos y se devuelve el usuario
   usuario.intentosFallidos = 0;
   return { ok: true, usuario: sinContrasena(usuario) };
+
+};
+
+// Devuelve un usuario activo por su id (sin contraseña).
+// Sirve para restaurar la sesión guardada al recargar la página.
+export const obtenerUsuarioPorId = (id) => {
+  const usuario = usuarios.find((u) => u.id === id);
+  return usuario && usuario.estado === 'Activo' ? sinContrasena(usuario) : null;
 };

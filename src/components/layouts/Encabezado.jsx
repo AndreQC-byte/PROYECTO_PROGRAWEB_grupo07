@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext'; // Asumiendo el Contexto creado previamente
 
 const Encabezado = () => {
-  const { usuario, logout } = useAuth();
+  const { usuario, cerrarSesion } = useAuth();
 
   return (
     <header style={{ height: '60px', backgroundColor: '#1F4E79', color: '#FFFFFF', display: 'flex', alignItems: 'center', padding: '0 20px', justifyContent: 'space-between' }}>
@@ -24,7 +24,7 @@ const Encabezado = () => {
         {usuario ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span>{usuario.nombres} ({usuario.rol})</span>
-            <button onClick={logout} style={{ background: 'transparent', color: '#FFF', border: '1px solid #FFF', borderRadius: '4px', padding: '4px 8px' }}>Cerrar sesión</button>
+            <button onClick={cerrarSesion} style={{ background: 'transparent', color: '#FFF', border: '1px solid #FFF', borderRadius: '4px', padding: '4px 8px' }}>Cerrar sesión</button>
           </div>
         ) : (
           <nav>

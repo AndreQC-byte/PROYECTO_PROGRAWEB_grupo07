@@ -499,3 +499,28 @@
     padding-top: 0;
   }
 }
+
+/* Estados del formulario: deshabilitado y botones dentro de alertas */
+.auth-input:disabled {
+  background-color: var(--color-bg);
+  cursor: not-allowed;
+}
+
+.auth-form .btn-primario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-mostrar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-enlace--inactivo {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.auth-acciones--alerta {
+  margin-top: 12px;
+}
