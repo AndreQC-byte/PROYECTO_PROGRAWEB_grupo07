@@ -523,3 +523,70 @@
 .auth-acciones--alerta {
   margin-top: 12px;
 }
+
+/* ---------- Registro ---------- */
+
+.auth-centro--registro {
+  padding-top: 0;
+  gap: 24px;
+}
+
+.auth-tarjeta-registro {
+  width: 100%;
+  max-width: 830px;
+  padding: 32px;
+}
+
+.auth-rejilla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 20px;
+}
+
+/* En el registro el botón principal no ocupa todo el ancho */
+.auth-form--registro .btn-primario {
+  width: auto;
+  height: 36px;
+  padding: 0 16px;
+}
+
+.auth-tarjeta-lateral {
+  width: 300px;
+  padding: 16px;
+}
+
+.auth-tarjeta-lateral h3 {
+  font-size: var(--text-subtitulo);
+  line-height: var(--lh-subtitulo);
+  font-weight: 600;
+}
+
+.auth-aux--bloque {
+  margin: 8px 0 12px;
+}
+
+.auth-separador {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 12px 0;
+}
+
+.auth-marca-ok {
+  position: absolute;
+  right: 12px;
+  top: 30px;
+  color: var(--color-success);
+}
+
+@media (max-width: 1100px) {
+  .auth-tarjeta-lateral {
+    width: 100%;
+    max-width: 830px;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-rejilla {
+    grid-template-columns: 1fr;
+  }
+}

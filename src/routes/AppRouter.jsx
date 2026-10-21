@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import LayoutPublico from '../features/auth/LayoutPublico';
 import Landing from '../features/auth/Landing';
 import Login from '../features/auth/Login';
+import Registro from '../features/auth/Registro';
 import ListaCategorias from '../features/catalogo/ListaCategorias';
 import LayoutAtencion from '../features/atencion_cierre_tickets/LayoutAtencion';
 import DetalleTicket from '../features/atencion_cierre_tickets/DetalleTicket';
@@ -44,6 +45,7 @@ const AppRouter = () => {
         <Route element={<LayoutPublico />}>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
         </Route>
 
         {/* Redirección a la vista principal según el rol (Requerimiento HU-1)[cite: 3] */}
