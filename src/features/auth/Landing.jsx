@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import tecnicoAula from '../../assets/landing-tecnico.jpg';
 
 export default function Landing() {
   return (
@@ -17,7 +18,7 @@ export default function Landing() {
             <a className="auth-btn btn-secundario" href="#">Ver cómo reportar</a>
           </div>
         </div>
-        <div className="auth-foto">[ foto: técnico atendiendo un aula ]</div>
+        <img className="auth-foto" src={tecnicoAula} alt="Técnico atendiendo un aula del campus" />
       </section>
 
       <section className="auth-info">
