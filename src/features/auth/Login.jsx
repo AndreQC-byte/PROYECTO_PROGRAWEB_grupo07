@@ -61,8 +61,8 @@ export default function Login() {
       return;
     }
 
-    setAviso({ tipo: 'exito', texto: `Sesión iniciada. Hola, ${resultado.usuario.nombres}.` });
-    await esperar(800);
+    setAviso({ tipo: 'exito', texto: resultado.mensajeBienvenida });
+    await esperar(1500);
     // /dashboard redirige a la vista principal según el rol
     navegar('/dashboard', { replace: true });
   };
@@ -77,15 +77,17 @@ export default function Login() {
 
         <form className="auth-form" onSubmit={enviar} noValidate>
           {aviso && (
-            <div className={`auth-alerta auth-alerta--${VARIANTE_AVISO[aviso.tipo]}`} role="alert">
-              {aviso.texto}
+            <>
+              <div className={`auth-alerta auth-alerta--${VARIANTE_AVISO[aviso.tipo]}`} role="alert">
+                {aviso.texto}
+              </div>
               {aviso.tipo === 'bloqueada' && (
-                <div className="auth-acciones auth-acciones--alerta">
+                <div className="auth-acciones">
                   <Link className="auth-btn btn-primario" to="/recuperar">Restablecer contraseña</Link>
                   <a className="auth-enlace" href="mailto:soporte.campus@ulima.edu.pe">Escribir a soporte</a>
                 </div>
               )}
-            </div>
+            </>
           )}
 
           <div className="auth-campo">
@@ -147,6 +149,12 @@ export default function Login() {
           <Boton type="submit" disabled={cargando}>
             {cargando ? 'Ingresando...' : 'Ingresar'}
           </Boton>
+
+          {cargando && (
+            <p className="auth-aux">
+              Campos y enlaces quedan deshabilitados mientras se valida la sesión.
+            </p>
+          )}
 
           <p className="auth-aux auth-aux--centrado">
             ¿No tienes cuenta? <Link className={claseEnlace} to="/registro">Regístrate</Link>

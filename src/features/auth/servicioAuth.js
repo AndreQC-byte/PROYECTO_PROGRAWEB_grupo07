@@ -1,3 +1,4 @@
+import { fechaActual, obtenerEncuestasSemilla, resumenUsuario } from '../encuestas/servicioEncuestas';
 import db from '../../data/db.json';
 
 const MAX_INTENTOS = 5;
@@ -60,6 +61,40 @@ const formatearHora = (fecha) =>
 
 // Devuelve el usuario sin la contraseña, para no compartirla con el resto de la app
 const sinContrasena = ({ contrasena, ...resto }) => resto;
+
+// ---------- Mensaje de bienvenida ----------
+const ESTADOS_EN_CURSO = ['Abierto', 'En atención', 'En espera', 'Reabierto'];
+
+const plural = (cantidad, singular, plurales) =>
+  `${cantidad} ${cantidad === 1 ? singular : plurales}`;
+
+// Texto que se muestra al iniciar sesión, según el rol (solo lee db.json)
+const crearMensajeBienvenida = (usuario) => {
+  const saludo = `Te damos la bienvenida, ${usuario.nombres.split(' ')[0]}.`;
+  const enCurso = db.tickets.filter((t) => ESTADOS_EN_CURSO.includes(t.estado));
+
+  if (usuario.rol === 'Usuario') {
+    const abiertos = enCurso.filter((t) => t.usuarioId === usuario.id).length;
+    const pendientes = resumenUsuario(
+      obtenerEncuestasSemilla(),
+      usuario.id,
+      fechaActual()
+    ).pendientes.length;
+
+    if (abiertos === 0 && pendientes === 0) {
+      return `${saludo} No tienes tickets abiertos ni encuestas pendientes.`;
+    }
+    return `${saludo} Tienes ${plural(abiertos, 'ticket abierto', 'tickets abiertos')} y ${plural(pendientes, 'encuesta pendiente', 'encuestas pendientes')}.`;
+  }
+
+  if (usuario.rol === 'Técnico') {
+    const asignados = enCurso.filter((t) => t.tecnicoAsignadoId === usuario.id).length;
+    return `${saludo} Tienes ${plural(asignados, 'ticket asignado', 'tickets asignados')} en curso.`;
+  }
+
+  const sinAsignar = enCurso.filter((t) => !t.tecnicoAsignadoId).length;
+  return `${saludo} Hay ${plural(sinAsignar, 'ticket', 'tickets')} sin asignar en la cola.`;
+};
 
 // ---------- Inicio de sesión ----------
 export const iniciarSesion = (correo, contrasena) => {
@@ -124,7 +159,11 @@ export const iniciarSesion = (correo, contrasena) => {
 
   // Todo bien: se reinician los intentos y se devuelve el usuario
   usuario.intentosFallidos = 0;
-  return { ok: true, usuario: sinContrasena(usuario) };
+  return {
+    ok: true,
+    usuario: sinContrasena(usuario),
+    mensajeBienvenida: crearMensajeBienvenida(usuario),
+  };
 };
 
 // Devuelve un usuario activo por su id (sin contraseña). Sirve para restaurar la sesión guardada al recargar la página.

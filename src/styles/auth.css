@@ -506,8 +506,8 @@
 }
 
 .auth-form .btn-primario:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background-color: var(--color-primary-dark);
+  cursor: progress;
 }
 
 .auth-mostrar:disabled {
@@ -518,10 +518,6 @@
 .auth-enlace--inactivo {
   pointer-events: none;
   opacity: 0.5;
-}
-
-.auth-acciones--alerta {
-  margin-top: 12px;
 }
 
 /* ---------- Registro ---------- */
