@@ -374,3 +374,43 @@ export const restablecerContrasena = (token, nuevaContrasena) => {
   guardarEnlaces();
   return { ok: true };
 };
+
+// ---------- Mi cuenta ----------
+export const obtenerAmbientesHabituales = () =>
+  [...new Set((db.ambientes || []).map((a) => a.codigo))].sort();
+
+export const resumenCuenta = (usuarioId) => {
+  const propios = (db.tickets || []).filter((t) => t.usuarioId === usuarioId);
+  return {
+    reportados: propios.length,
+    abiertos: propios.filter((t) => ESTADOS_EN_CURSO.includes(t.estado)).length,
+  };
+};
+
+export const actualizarPerfil = (id, datos) => {
+  const usuario = usuarios.find((u) => u.id === id);
+  if (!usuario) return { ok: false, mensaje: 'No encontramos tu cuenta.' };
+
+  usuario.nombres = datos.nombres.trim();
+  usuario.apellidos = datos.apellidos.trim();
+  usuario.telefono = datos.telefono.trim();
+  usuario.unidad = datos.unidad;
+  usuario.ambienteHabitual = datos.ambienteHabitual;
+  guardarCambios();
+  return { ok: true };
+};
+
+export const cambiarContrasena = (id, actual, nueva) => {
+  const usuario = usuarios.find((u) => u.id === id);
+  if (!usuario) return { ok: false, mensaje: 'No encontramos tu cuenta.' };
+  if (usuario.contrasena !== actual) {
+    return { ok: false, mensaje: 'La contraseña actual no es correcta.' };
+  }
+  if (actual === nueva) {
+    return { ok: false, mensaje: 'La nueva contraseña debe ser distinta de la actual.' };
+  }
+
+  usuario.contrasena = nueva;
+  guardarCambios();
+  return { ok: true };
+};

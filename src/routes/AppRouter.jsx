@@ -7,6 +7,9 @@ import Login from '../features/auth/Login';
 import Registro from '../features/auth/Registro';
 import RecuperarPassword from '../features/auth/RecuperarPassword';
 import AltaInvitacion from '../features/auth/AltaInvitacion';
+import LayoutPrivado from '../features/auth/LayoutPrivado';
+import MiCuenta from '../features/auth/MiCuenta';
+import AccesoDenegado from '../features/auth/AccesoDenegado';
 import ListaCategorias from '../features/catalogo/ListaCategorias';
 import LayoutAtencion from '../features/atencion_cierre_tickets/LayoutAtencion';
 import DetalleTicket from '../features/atencion_cierre_tickets/DetalleTicket';
@@ -24,7 +27,6 @@ import ResponderEncuesta from '../features/encuestas/ResponderEncuesta';
 import SatisfaccionSupervisor from '../features/encuestas/SatisfaccionSupervisor';
 // Importaciones simuladas para las demás historias en desarrollo
 const VistaTemporal = ({ nombre }) => <div className="contenedor-principal"><h2>Vista en desarrollo: {nombre}</h2></div>;
-const AccesoDenegado = () => <div className="contenedor-principal"><h2>403 - No tienes permiso para ver esta sección</h2></div>; // Vista requerida por HU-1[cite: 3]
 
 // Componente para proteger rutas según el rol[cite: 3]
 const RutaProtegida = ({ children, rolesPermitidos }) => {
@@ -122,8 +124,17 @@ const AppRouter = () => {
           <Route path="/supervisor/satisfaccion" element={<SatisfaccionSupervisor />} />
         </Route>
 
+        {/* HU-1: pantallas con sesión iniciada, para cualquier rol */}
+        <Route element={
+          <RutaProtegida rolesPermitidos={['Usuario', 'Técnico', 'Supervisor']}>
+            <LayoutPrivado />
+          </RutaProtegida>
+        }>
+          <Route path="/mi-cuenta" element={<MiCuenta />} />
+          <Route path="/403" element={<AccesoDenegado />} />
+        </Route>
+        
         {/* Rutas de Error */}
-        <Route path="/403" element={<AccesoDenegado />} />
         <Route path="*" element={<VistaTemporal nombre="404 - No encontrado" />} />
       </Routes>
     </BrowserRouter>
