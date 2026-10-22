@@ -586,3 +586,92 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Alta por invitación ---------- */
+
+.auth-tarjeta-invitacion {
+  width: 100%;
+  max-width: 880px;
+  padding: 24px 32px;
+}
+
+.auth-form--invitacion .btn-primario {
+  width: auto;
+  height: 36px;
+  padding: 0 16px;
+}
+
+/* Botón terciario (solo texto), usado con el componente Boton */
+.btn-terciario {
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font: 500 var(--text-auxiliar) / var(--lh-auxiliar) var(--font-principal);
+  cursor: pointer;
+}
+
+.btn-terciario:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.btn-terciario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-insignia {
+  align-self: flex-start;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--border-radius);
+  padding: 0 8px;
+  color: var(--color-accent);
+  font-size: var(--text-etiqueta);
+  line-height: 20px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.auth-input[readonly] {
+  background-color: var(--color-bg);
+  color: var(--color-text-muted);
+}
+
+.auth-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.auth-chip {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  font: 400 var(--text-auxiliar) / var(--lh-auxiliar) var(--font-principal);
+  cursor: pointer;
+}
+
+.auth-chip--activo {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.auth-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.auth-tarjeta-mensaje {
+  width: 100%;
+  max-width: 520px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

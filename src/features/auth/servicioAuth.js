@@ -181,13 +181,8 @@ export const registrarUsuario = (datos) => {
     return { ok: false, tipo: 'correo', mensaje: 'Este correo ya está registrado.' };
   }
 
-  const ultimoNumero = Math.max(
-    0,
-    ...usuarios.map((u) => parseInt(u.id.replace('USR-', ''), 10) || 0)
-  );
-
   const nuevo = {
-    id: `USR-${String(ultimoNumero + 1).padStart(3, '0')}`,
+    id: siguienteIdUsuario(),
     nombres: datos.nombres.trim(),
     apellidos: datos.apellidos.trim(),
     correo: datos.correo.trim().toLowerCase(),
@@ -205,4 +200,102 @@ export const registrarUsuario = (datos) => {
   usuarios.push(nuevo);
   guardarCambios();
   return { ok: true, usuario: sinContrasena(nuevo) };
+};
+
+// ---------- Invitaciones (técnicos y supervisores) ----------
+export const ESPECIALIDADES_MAX = 3;
+const CLAVE_INVITACIONES = 'mesaAyuda.invitaciones';
+
+const siguienteIdUsuario = () => {
+  const ultimoNumero = Math.max(
+    0,
+    ...usuarios.map((u) => parseInt(u.id.replace('USR-', ''), 10) || 0)
+  );
+  return `USR-${String(ultimoNumero + 1).padStart(3, '0')}`;
+};
+
+// Solo se guarda el estado de cada invitación
+const leerEstadosInvitaciones = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CLAVE_INVITACIONES)) || {};
+  } catch {
+    return {};
+  }
+};
+
+const estadosGuardados = leerEstadosInvitaciones();
+const invitaciones = (db.invitaciones || []).map((i) => ({
+  ...i,
+  estado: estadosGuardados[i.id] ?? i.estado,
+}));
+
+const guardarInvitaciones = () => {
+  try {
+    const estados = Object.fromEntries(invitaciones.map((i) => [i.id, i.estado]));
+    localStorage.setItem(CLAVE_INVITACIONES, JSON.stringify(estados));
+  } catch {
+  }
+};
+
+export const obtenerCategoriasActivas = () =>
+  db.categorias.filter((c) => c.estado === 'Activa').map(({ id, nombre }) => ({ id, nombre }));
+
+export const obtenerInvitacion = (id) => {
+  const invitacion = invitaciones.find((i) => i.id === id);
+  if (!invitacion) return { situacion: 'inexistente' };
+
+  const invitador = usuarios.find((u) => u.id === invitacion.invitadoPorId);
+  const datos = {
+    ...invitacion,
+    invitadoPor: invitador
+      ? `${invitador.nombres} ${invitador.apellidos}`
+      : 'El área de Infraestructura',
+  };
+
+  if (invitacion.estado !== 'Pendiente') return { situacion: 'respondida', invitacion: datos };
+  if (new Date(invitacion.fechaExpiracion) < new Date()) {
+    return { situacion: 'vencida', invitacion: datos };
+  }
+  return { situacion: 'valida', invitacion: datos };
+};
+
+export const aceptarInvitacion = (id, datos) => {
+  const { situacion, invitacion } = obtenerInvitacion(id);
+  if (situacion !== 'valida') {
+    return { ok: false, mensaje: 'Esta invitación ya no está disponible.' };
+  }
+  if (!correoDisponible(invitacion.correo)) {
+    return { ok: false, mensaje: 'Ya existe una cuenta con el correo de esta invitación.' };
+  }
+
+  const nuevo = {
+    id: siguienteIdUsuario(),
+    nombres: invitacion.nombres,
+    apellidos: invitacion.apellidos,
+    correo: invitacion.correo.toLowerCase(),
+    rol: invitacion.rol,
+    telefono: datos.telefono.trim(),
+    ...(invitacion.rol === 'Técnico' ? { especialidades: datos.especialidades } : {}),
+    estado: 'Activo',
+    contrasena: datos.contrasena,
+    intentosFallidos: 0,
+    bloqueadoHasta: null,
+    fechaCreacion: new Date().toISOString(),
+  };
+
+  usuarios.push(nuevo);
+  invitaciones.find((i) => i.id === id).estado = 'Aceptada';
+  guardarCambios();
+  guardarInvitaciones();
+  return { ok: true, usuario: sinContrasena(nuevo) };
+};
+
+export const rechazarInvitacion = (id) => {
+  const { situacion } = obtenerInvitacion(id);
+  if (situacion !== 'valida') {
+    return { ok: false, mensaje: 'Esta invitación ya no está disponible.' };
+  }
+  invitaciones.find((i) => i.id === id).estado = 'Rechazada';
+  guardarInvitaciones();
+  return { ok: true };
 };

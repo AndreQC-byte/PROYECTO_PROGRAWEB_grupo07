@@ -52,7 +52,8 @@ export default function Registro() {
   };
 
   // Un error se muestra cuando el campo ya fue visitado o se intentó enviar el formulario
-  const errorVisible = (campo) => (tocados[campo] || intentoEnvio ? errores[campo] : '');
+  const errorVisible = (campo) =>
+    !cargando && (tocados[campo] || intentoEnvio) ? errores[campo] : '';
   const claseInput = (campo) => `auth-input ${errorVisible(campo) ? 'auth-input--error' : ''}`;
 
   const cambiar = (campo) => (evento) => {
