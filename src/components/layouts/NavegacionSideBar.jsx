@@ -1,67 +1,171 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { NavLink } from 'react-router-dom';
-
-// Enlace del menú: sin subrayado y resaltado cuando su ruta es la página actual ("end" evita marcar dos a la vez)
-const Enlace = ({ to, children }) => (
-  <NavLink to={to} end className={({ isActive }) => `nav-enlace ${isActive ? 'nav-enlace-activo' : ''}`}>
-    {children}
-  </NavLink>
-);
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const NavegacionSidebar = () => {
-  const { usuario } = useAuth();
+  const { usuario, cerrarSesion } = useAuth();
+  const navigate = useNavigate();
 
-  // Si no hay sesión, no se muestra el sidebar operativo
   if (!usuario) return null;
 
+  const handleCerrarSesion = () => {
+    cerrarSesion();
+    navigate('/login');
+  };
+
   return (
-    // Ancho de la navegación lateral fijado en 236 px[cite: 3]
-    <aside style={{ width: '236px', backgroundColor: '#F4F6F8', padding: '20px', height: 'calc(100vh - 60px)', borderRight: '1px solid #D6DEE5' }}>
-      
-      <div className="perfil-resumen" style={{ marginBottom: '20px' }}>
-        <div style={{ fontWeight: 'bold' }}>{usuario.nombres} {usuario.apellidos}</div>
-        <div style={{ fontSize: '13px', color: '#5F6C78' }}>{usuario.rol}</div>
+    <aside className="layout-sidebar">
+      <div>
+        {/* ROL SUPERVISOR (Mockup 2.1, 4.1, 6.3, 7.1) */}
+        {usuario.rol === 'Supervisor' && (
+          <nav>
+            <div className="seccion-titulo">SUPERVISIÓN</div>
+            <ul className="nav-lista">
+              <li>
+                <NavLink to="/supervisor/tablero" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Tablero</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/supervisor/cola" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Cola de atención</span>
+                  <span className="nav-badge-conteo">24</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/supervisor/bandejas" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Bandejas de técnicos</span>
+                  <span className="nav-badge-conteo">6</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/catalogo/categorias" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Categorías</span>
+                  <span className="nav-badge-conteo">7</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/catalogo/ambientes" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Sedes y ambientes</span>
+                  <span className="nav-badge-conteo">48</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/catalogo/tecnicos" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Técnicos por categoría</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/supervisor/satisfaccion" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Satisfacción</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/supervisor/carga" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Carga por técnico</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/supervisor/usuarios" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Usuarios</span>
+                  <span className="nav-badge-conteo">15</span>
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        )}
+
+        {/* ROL TÉCNICO (Mockup 4.5, 5.1, 5.5) */}
+        {usuario.rol === 'Técnico' && (
+          <nav>
+            <div className="seccion-titulo">ATENCIÓN</div>
+            <ul className="nav-lista">
+              <li>
+                <NavLink to="/tecnico/bandeja" end className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Mi bandeja</span>
+                  <span className="nav-badge-conteo">8</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/tecnico/bandeja?estado=En%20atenci%C3%B3n" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>En atención</span>
+                  <span className="nav-badge-conteo">3</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/tecnico/bandeja?estado=En%20espera" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>En espera</span>
+                  <span className="nav-badge-conteo">2</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/tecnico/bandeja?estado=Resuelto" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Resueltos hoy</span>
+                  <span className="nav-badge-conteo">2</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/tecnico/historial" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Historial</span>
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        )}
+
+        {/* ROL USUARIO (Mockup 1.6, 3.1, 3.3, 6.1) */}
+        {usuario.rol === 'Usuario' && (
+          <nav>
+            <div className="seccion-titulo">MIS SERVICIOS</div>
+            <ul className="nav-lista">
+              <li>
+                <NavLink to="/mis-tickets" end className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Inicio</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/mis-tickets/nuevo" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Nuevo ticket</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/mis-tickets" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Mis tickets</span>
+                  <span className="nav-badge-conteo">12</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/encuestas/pendiente" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Encuesta pendiente</span>
+                  <span className="nav-badge-conteo">1</span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/encuestas" end className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                  <span>Mis encuestas</span>
+                  <span className="nav-badge-conteo">7</span>
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
+        )}
       </div>
 
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        {/* Enlaces para el rol USUARIO[cite: 3] */}
-        {usuario.rol === 'Usuario' && (
-          <>
-            <h5 style={{ fontSize: '16px', color: '#141C24', margin: '12px 0 4px' }}>MIS SERVICIOS</h5>
-            <Enlace to="/inicio">Inicio</Enlace>
-            <Enlace to="/mis-tickets/nuevo">Nuevo ticket</Enlace>
-            <Enlace to="/mis-tickets">Mis tickets</Enlace>
-            <Enlace to="/encuestas/pendiente">Encuesta pendiente</Enlace>
-            <Enlace to="/encuestas">Mis encuestas</Enlace>
-            <Enlace to="/mi-cuenta">Mi cuenta</Enlace>
-          </>
-        )}
-
-        {/* Enlaces para el rol TÉCNICO[cite: 3] */}
-        {usuario.rol === 'Técnico' && (
-          <>
-            <h5 style={{ fontSize: '16px', color: '#141C24', margin: '12px 0 4px' }}>ATENCIÓN</h5>
-            <Enlace to="/tecnico/bandeja">Mi bandeja</Enlace>
-            <Enlace to="/tecnico/historial">Historial</Enlace>
-            <Enlace to="/mi-cuenta">Mi cuenta</Enlace>
-          </>
-        )}
-
-        {/* Enlaces para el rol SUPERVISOR[cite: 3] */}
-        {usuario.rol === 'Supervisor' && (
-          <>
-            <h5 style={{ fontSize: '16px', color: '#141C24', margin: '12px 0 4px' }}>SUPERVISIÓN</h5>
-            <Enlace to="/supervisor/tablero">Tablero</Enlace>
-            <Enlace to="/supervisor/cola">Cola de atención</Enlace>
-            <Enlace to="/catalogo/categorias">Categorías</Enlace>
-            <Enlace to="/catalogo/ambientes">Sedes y ambientes</Enlace>
-            <Enlace to="/catalogo/tecnicos">Técnicos por categoría</Enlace>
-            <Enlace to="/supervisor/satisfaccion">Satisfacción</Enlace>
-            <Enlace to="/supervisor/usuarios">Usuarios</Enlace>
-          </>
-        )}
-      </nav>
+      {/* SECCIÓN INFERIOR COMÚN (Mockup 1.6, 2.1, 4.1, etc.) */}
+      <div className="layout-sidebar-inferior">
+        <NavLink to="/mi-cuenta" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+          <span>Mi cuenta</span>
+        </NavLink>
+        <button
+          type="button"
+          onClick={handleCerrarSesion}
+          className="btn-cerrar-sesion-link"
+          title="Cerrar sesión"
+        >
+          <span>Cerrar sesión</span>
+          <span style={{ fontSize: '13px' }}>➔</span>
+        </button>
+      </div>
     </aside>
   );
 };
