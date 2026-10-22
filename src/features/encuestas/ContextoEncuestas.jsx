@@ -51,6 +51,14 @@ export const ProveedorEncuestas = ({ children }) => {
 
 export const useEncuestas = () => {
   const contexto = useContext(ContextoEncuestas);
-  if (!contexto) throw new Error('useEncuestas debe usarse dentro de ProveedorEncuestas');
+  if (!contexto) {
+    // Respaldo seguro para evitar pantallas en blanco si el componente se monta fuera del contexto
+    return {
+      encuestas: obtenerEncuestasSemilla(),
+      ahora: fechaActual(),
+      notificar: () => {},
+      guardarRespuesta: () => false,
+    };
+  }
   return contexto;
 };

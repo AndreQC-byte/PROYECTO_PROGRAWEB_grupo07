@@ -1,0 +1,385 @@
+/* Estilos para HU-4: Cola y Asignación */
+
+.cola-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 60px; /* Espacio para barra de lote flotante */
+}
+
+.cola-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.cola-titulo-seccion h1 {
+  font-size: var(--text-titulo-pantalla, 28px);
+  line-height: var(--lh-titulo-pantalla, 32px);
+  color: var(--color-text, #141C24);
+  margin-bottom: 4px;
+}
+
+.cola-subtitulo {
+  font-size: var(--text-cuerpo, 15px);
+  color: var(--color-text-muted, #5F6C78);
+}
+
+/* Tarjetas rápidas de estado (Mockup 4.1: Abiertos 9, En atención 8, En espera 3, Resueltos hoy 4) */
+.cola-resumen-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cola-badge-estado-btn {
+  background-color: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--color-text, #141C24);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.cola-badge-estado-btn:hover {
+  background-color: #F8FAFC;
+  border-color: var(--color-primary, #1F4E79);
+}
+
+.cola-badge-estado-btn.activo {
+  background-color: var(--color-primary-soft, #E7EFF6);
+  border-color: var(--color-primary, #1F4E79);
+  color: var(--color-primary, #1F4E79);
+  font-weight: 600;
+}
+
+.cola-badge-numero {
+  font-weight: 700;
+}
+
+/* Barra de Filtros de la Cola */
+.cola-filtros-barra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #D6DEE5);
+  padding: 10px 16px;
+  border-radius: var(--border-radius, 4px);
+  flex-wrap: wrap;
+}
+
+.cola-input-buscar {
+  flex: 1;
+  min-width: 220px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--color-text, #141C24);
+}
+
+.cola-input-buscar:focus {
+  outline: none;
+  border-color: var(--color-primary, #1F4E79);
+}
+
+.cola-select-filtro {
+  height: 36px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+  background-color: var(--color-surface, #FFFFFF);
+  font-size: 13px;
+  color: var(--color-text, #141C24);
+  cursor: pointer;
+}
+
+/* Tabla de Tickets de la Cola */
+.cola-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+}
+
+.cola-tabla th {
+  height: 44px;
+  background-color: #FAFCFE;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted, #5F6C78);
+  text-align: left;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--color-border, #D6DEE5);
+}
+
+.cola-fila-ticket {
+  height: 44px;
+  border-bottom: 1px solid var(--color-border, #D6DEE5);
+  transition: background-color 0.15s;
+}
+
+.cola-fila-ticket:hover {
+  background-color: #F8FAFD;
+}
+
+.cola-fila-ticket.seleccionada {
+  background-color: #F2F7FC !important;
+}
+
+.cola-fila-ticket td {
+  padding: 0 10px;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+/* Barra lateral en la fila según prioridad (Mockup 2 / Mockup 4.1) */
+.cola-fila-ticket.prioridad-Critica td:first-child {
+  border-left: 4px solid var(--color-danger, #B4322B);
+}
+
+.cola-fila-ticket.prioridad-Alta td:first-child {
+  border-left: 4px solid var(--color-accent, #D2601A);
+}
+
+.cola-fila-ticket.prioridad-Media td:first-child {
+  border-left: 4px solid var(--color-warning, #B7791F);
+}
+
+.cola-fila-ticket.prioridad-Baja td:first-child {
+  border-left: 4px solid var(--color-info, #3B6FA8);
+}
+
+.cola-codigo-mono {
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: var(--color-primary, #1F4E79);
+  text-decoration: none;
+}
+
+.cola-codigo-mono:hover {
+  text-decoration: underline;
+}
+
+.cola-solicitante-celda {
+  font-size: 13px;
+  color: var(--color-text, #141C24);
+}
+
+.cola-tecnico-celda {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cola-tecnico-sin-asignar {
+  color: var(--color-text-muted, #5F6C78);
+  font-style: italic;
+}
+
+/* Barra flotante de acciones en lote (Mockup 4.4) */
+.cola-barra-lote-flotante {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #163A5A;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  z-index: 500;
+}
+
+.cola-barra-lote-contador {
+  font-size: 14px;
+  font-weight: 600;
+  padding-right: 12px;
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.cola-barra-lote-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cola-barra-lote-btn-primario {
+  background-color: var(--color-primary, #1F4E79);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.cola-barra-lote-btn-primario:hover {
+  background-color: #123758;
+}
+
+.cola-barra-lote-btn-secundario {
+  background-color: #FFFFFF;
+  color: #163A5A;
+}
+
+.cola-barra-lote-btn-secundario:hover {
+  background-color: #EAEFF4;
+}
+
+.cola-barra-lote-btn-destructivo {
+  background-color: var(--color-danger, #B4322B);
+  color: #FFFFFF;
+}
+
+.cola-barra-lote-btn-destructivo:hover {
+  background-color: #93221C;
+}
+
+.cola-barra-lote-btn-quitar {
+  background: none;
+  color: #A0B7CD;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cola-barra-lote-btn-quitar:hover {
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+}
+
+/* Modales Asignar y Prioridad (Mockup 4.2 y 4.3) */
+.cola-modal-tarjeta-tecnico {
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cola-modal-tarjeta-tecnico:hover {
+  background-color: #F8FAFD;
+  border-color: var(--color-primary, #1F4E79);
+}
+
+.cola-modal-tarjeta-tecnico.seleccionado {
+  background-color: var(--color-primary-soft, #E7EFF6);
+  border-color: var(--color-primary, #1F4E79);
+}
+
+.cola-modal-prioridad-indicador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background-color: #F8FAFC;
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.cola-modal-aviso-cambio {
+  background-color: #FBF3E4;
+  border: 1px solid #B7791F;
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #724608;
+  margin-top: 12px;
+}
+
+/* Bandeja del Técnico (Mockup 4.5) */
+.bandeja-pildoras-filtro {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bandeja-pildora-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border, #D6DEE5);
+  background-color: var(--color-surface, #FFFFFF);
+  color: var(--color-text, #141C24);
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.bandeja-pildora-btn.activa {
+  background-color: var(--color-primary, #1F4E79);
+  color: #FFFFFF;
+  border-color: var(--color-primary, #1F4E79);
+}
+
+.bandeja-plazo-texto {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.bandeja-plazo-vencido {
+  color: var(--color-danger, #B4322B);
+}
+
+.bandeja-plazo-por-vencer {
+  color: var(--color-warning, #B7791F);
+}
+
+.bandeja-plazo-ok {
+  color: var(--color-success, #1E7F4D);
+}
+
+.bandeja-alerta-retraso {
+  background-color: #FBEAE8;
+  border: 1px solid var(--color-danger, #B4322B);
+  color: var(--color-danger, #B4322B);
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+/* Sección de Autoasignación */
+.bandeja-seccion-autoasignar {
+  margin-top: 24px;
+  border: 1px solid var(--color-border, #D6DEE5);
+  border-radius: 4px;
+  background-color: var(--color-surface, #FFFFFF);
+  overflow: hidden;
+}
+
+.bandeja-seccion-autoasignar-cabecera {
+  padding: 14px 16px;
+  background-color: #F8FAFD;
+  border-bottom: 1px solid var(--color-border, #D6DEE5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+

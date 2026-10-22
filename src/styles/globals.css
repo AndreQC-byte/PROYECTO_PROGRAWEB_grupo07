@@ -1,4 +1,7 @@
 @import './theme.css';
+@import './layout.css';
+@import './catalogo.css';
+@import './cola.css';
 @import './atencion.css'; /* HU-5: Atención y cierre */
 @import './encuestas.css'; /* HU-6: Encuesta de satisfacción */
 
@@ -10,7 +13,7 @@
 }
 
 body {
-  font-family: var(--font-principal); /* IBM Plex Sans */ /*Estandar que estamos siguiendo según el documento*/
+  font-family: var(--font-principal); /* IBM Plex Sans */
   background-color: var(--color-bg); /* #F4F6F8 */
   color: var(--color-text); /* #141C24 */
   font-size: var(--text-cuerpo);
@@ -38,24 +41,50 @@ h5 {
 .contenedor-principal {
   max-width: var(--ancho-contenido); /* 1200 px centrado */
   margin: 0 auto;
-  padding-top: var(--alto-cabecera); /* 60 px */
   min-height: calc(100vh - var(--alto-pie)); /* Reserva 44px para el pie */
 }
 
 /* Reglas UI Comunes */
 button, input, select, textarea, .tarjeta-ticket, .etiqueta-estado {
   border-radius: var(--border-radius); /* 4 px en todo */
+  font-family: inherit;
 }
 
 /* Modales y Desplegables (Las únicas excepciones que llevan sombra) */
-.modal, .menu-desplegable {
+.modal, .menu-desplegable, .modal-contenido {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15); /* Sin sombras salvo modales */
   background-color: var(--color-surface); /* #FFFFFF */
 }
 
 /* Tablas */
+.tabla-datos {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
 .tabla-datos tr {
   height: var(--alto-fila-tabla); /* Filas de tabla de 44 px */
+}
+
+.tabla-datos th {
+  background-color: #FAFCFE;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-align: left;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabla-datos td {
+  padding: 0 12px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  vertical-align: middle;
 }
 
 /* Estilos de botones básicos */
@@ -64,18 +93,48 @@ button, input, select, textarea, .tarjeta-ticket, .etiqueta-estado {
   color: var(--color-surface);
   border: none;
   padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4); /* Espaciado múltiplo de 4 */
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-primario:hover {
+  background-color: var(--color-primary-dark);
 }
 
 .btn-secundario {
   background-color: var(--color-surface);
   color: var(--color-primary);
   border: 1px solid var(--color-border);
+  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-secundario:hover {
+  background-color: var(--color-bg);
+}
+
+.btn-terciario {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
 }
 
 .btn-destructivo {
   background-color: var(--color-danger);
   color: var(--color-surface);
   border: none;
+  padding: calc(var(--spacing-unit) * 2) calc(var(--spacing-unit) * 4);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btn-destructivo:hover {
+  background-color: #93221C;
 }
 
 /* Enlaces de la navegación lateral compartida (NavegacionSideBar.jsx) */
@@ -102,68 +161,110 @@ button, input, select, textarea, .tarjeta-ticket, .etiqueta-estado {
   font-weight: 600;
 }
 
-:root {
-  --azul: #1F4E79;
-  --azul-oscuro: #163A5A;
-  --fondo: #F4F6F8;
-  --borde: #D6DEE5;
-  --rojo: #B4322B;
-  --naranja: #D2601A;
-  --amarillo: #B7791F;
-  --celeste: #3B6FA8;
-}
-
-.filtros input, .filtros select, .acciones button {
-  margin: 0 8px 8px 0;
-  padding: 6px;
-}
-
-table, thead {
-  display: block;
-  width: 100%;
-  margin-top: 12px;
-  background: #fff;
-}
-
-tbody {
-  display: flex;
-  flex-direction: column;
-}
-
-tr {
-  display: flex;
-  border-bottom: 1px solid var(--borde);
-}
-
-th, td {
-  flex: 1;
-  padding: 12px 8px;
-  text-align: left;
-}
-
-.chk {
-  flex: 0 0 40px;
-}
-
-.critica { color: var(--rojo); }
-.alta { color: var(--naranja); }
-.media { color: var(--amarillo); }
-.baja { color: var(--celeste); }
-
-.modal {
+/* Modales globales */
+.modal-overlay {
   position: fixed;
-  top: 100px;
-  left: 35%;
-  width: 400px;
-  padding: 24px;
-  background: #fff;
-  border: 1px solid var(--azul);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(20, 28, 36, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.modal select, .modal textarea {
-  display: block;
-  width: 100%;
-  margin: 8px 0;
+.modal-contenido {
+  background: var(--color-surface);
+  border-radius: 4px;
+  width: 90%;
+  max-width: 520px;
+  border: 1px solid var(--color-border);
 }
 
+.modal-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-cabecera h2, .modal-cabecera h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-cerrar-modal {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.btn-cerrar-modal:hover {
+  color: var(--color-text);
+}
+
+.modal-cuerpo {
+  padding: 20px;
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 16px 20px;
+  background-color: #FAFCFE;
+  border-top: 1px solid var(--color-border);
+  border-radius: 0 0 4px 4px;
+}
+
+/* Notificaciones y Banners globales */
+.notificacion-banner {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notificacion-exito {
+  background-color: #E8F3EC;
+  border: 1px solid #1E7F4D;
+  color: #1E7F4D;
+}
+
+.notificacion-error {
+  background-color: #FBEAE8;
+  border: 1px solid #B4322B;
+  color: #B4322B;
+}
+
+.notificacion-advertencia {
+  background-color: #FBF3E4;
+  border: 1px solid #B7791F;
+  color: #B7791F;
+}
+
+.notificacion-info {
+  background-color: #E7EFF6;
+  border: 1px solid #3B6FA8;
+  color: #3B6FA8;
+}
+
+.badge-conteo {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #EAEFF4;
+  color: var(--color-text-muted);
+}

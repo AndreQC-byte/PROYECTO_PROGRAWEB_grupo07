@@ -1,112 +1,308 @@
-import React, { useState } from 'react';
-import db from '../../data/db.json'; 
+import React, { useState, useMemo } from 'react';
+import * as servicioCatalogo from './servicioCatalogo';
+import db from '../../data/db.json';
 
 const TecnicosPorCategoria = () => {
-  // 1. Filtrar desde el JSON únicamente a los usuarios cuyo rol sea "Técnico"
-  const tecnicosIniciales = db.usuarios.filter(usuario => usuario.rol === 'Técnico');
-  const [tecnicos, setTecnicos] = useState(tecnicosIniciales);
+  const [tecnicos, setTecnicos] = useState(() => servicioCatalogo.obtenerTecnicos());
+  const [categorias] = useState(() =>
+    servicioCatalogo.obtenerCategorias().filter((c) => c.estado === 'Activa')
+  );
 
-  const categorias = db.categorias;
-  const tickets = db.tickets;
+  const [notificacion, setNotificacion] = useState(null);
+  const [modalInvitar, setModalInvitar] = useState(false);
 
-  // 2. Lógica para calcular la "Carga actual" cruzando datos con los tickets
+  // Formulario de invitación de nuevo técnico
+  const [invNombres, setInvNombres] = useState('');
+  const [invApellidos, setInvApellidos] = useState('');
+  const [invCorreo, setInvCorreo] = useState('');
+  const [invEspecialidades, setInvEspecialidades] = useState([]);
+  const [errorInvitacion, setErrorInvitacion] = useState('');
+
+  // Tickets para calcular carga actual
+  const tickets = db.tickets || [];
+
   const calcularCarga = (tecnicoId) => {
-    return tickets.filter(t => 
-      t.tecnicoAsignadoId === tecnicoId && 
-      ['Abierto', 'En atención', 'En espera'].includes(t.estado)
+    return tickets.filter(
+      (t) =>
+        t.tecnicoAsignadoId === tecnicoId &&
+        ['Abierto', 'En atención', 'En espera'].includes(t.estado)
     ).length;
   };
 
-  // 3. Función para agregar o quitar la ID de la categoría en el arreglo "especialidades"
   const toggleCategoria = (tecnicoId, categoriaId) => {
-    setTecnicos(tecnicos.map(tec => {
-      if (tec.id === tecnicoId) {
-        // Verifica si el técnico ya tiene esta categoría asignada en su arreglo
-        const tieneEspecialidad = tec.especialidades?.includes(categoriaId);
-        
-        const nuevasEspecialidades = tieneEspecialidad
-          ? tec.especialidades.filter(id => id !== categoriaId) // Si la tiene, se quita
-          : [...(tec.especialidades || []), categoriaId];       // Si no la tiene, se agrega
-          
-        return { ...tec, especialidades: nuevasEspecialidades };
-      }
-      return tec;
-    }));
+    setTecnicos((prev) =>
+      prev.map((tec) => {
+        if (tec.id === tecnicoId) {
+          const actual = tec.especialidades || [];
+          const existe = actual.includes(categoriaId);
+          const nuevas = existe
+            ? actual.filter((id) => id !== categoriaId)
+            : [...actual, categoriaId];
+          return { ...tec, especialidades: nuevas };
+        }
+        return tec;
+      })
+    );
   };
 
   const guardarMatriz = () => {
-    alert("Matriz de técnicos actualizada y guardada correctamente.");
+    servicioCatalogo.actualizarMatrizTecnicos(tecnicos);
+    setNotificacion({
+      tipo: 'exito',
+      mensaje: 'Matriz de técnicos actualizada y guardada correctamente.',
+    });
+  };
+
+  // Cálculo de alerta de cobertura (Mockup 2.4: Climatización tiene solo dos técnicos...)
+  const alertaCobertura = useMemo(() => {
+    for (const cat of categorias) {
+      const tecsHabilitados = tecnicos.filter((tec) =>
+        (tec.especialidades || []).includes(cat.id)
+      ).length;
+      const ticketsAbiertos = servicioCatalogo.obtenerTicketsAbiertosPorCategoria(cat.id);
+
+      if (tecsHabilitados <= 2 && ticketsAbiertos >= 3) {
+        return `${cat.nombre} tiene solo ${tecsHabilitados} técnicos habilitados y ${ticketsAbiertos} tickets abiertos. Considera habilitar un tercero.`;
+      }
+    }
+    return null;
+  }, [categorias, tecnicos]);
+
+  const procesarInvitacion = (e) => {
+    e.preventDefault();
+    if (!invNombres.trim() || !invApellidos.trim() || !invCorreo.trim()) {
+      setErrorInvitacion('Por favor completa todos los campos obligatorios.');
+      return;
+    }
+
+    if (!invCorreo.includes('@ulima.edu.pe') && !invCorreo.includes('@aloe.ulima.edu.pe')) {
+      setErrorInvitacion('El correo debe pertenecer al dominio institucional (@ulima.edu.pe).');
+      return;
+    }
+
+    servicioCatalogo.invitarTecnico({
+      nombres: invNombres,
+      apellidos: invApellidos,
+      correo: invCorreo,
+      especialidades: invEspecialidades,
+    });
+
+    setTecnicos(servicioCatalogo.obtenerTecnicos());
+    setModalInvitar(false);
+    setInvNombres('');
+    setInvApellidos('');
+    setInvCorreo('');
+    setInvEspecialidades([]);
+    setErrorInvitacion('');
+    setNotificacion({
+      tipo: 'exito',
+      mensaje: `Invitación enviada correctamente a ${invCorreo}.`,
+    });
   };
 
   return (
-    <div className="vista-tecnicos-categoria">
-      <div className="cabecera-seccion flex-between" style={{ marginBottom: '16px' }}>
-        <div>
+    <div className="catalogo-contenedor">
+      {/* Banner de notificación */}
+      {notificacion && (
+        <div className={`notificacion-banner notificacion-${notificacion.tipo}`}>
+          <span>{notificacion.mensaje}</span>
+          <button
+            type="button"
+            className="btn-cerrar-modal"
+            style={{ fontSize: '16px' }}
+            onClick={() => setNotificacion(null)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Cabecera (Mockup 2.4) */}
+      <div className="catalogo-cabecera">
+        <div className="catalogo-titulo-seccion">
           <h1>Técnicos por categoría</h1>
-          <p style={{ fontSize: '15px', color: '#5F6C78' }}>
+          <p className="catalogo-subtitulo">
             Marca las categorías que cada técnico puede atender. La cola solo ofrece técnicos habilitados al asignar.
           </p>
         </div>
-        <div className="acciones" style={{ display: 'flex', gap: '8px' }}>
-          <button className="btn-secundario">Invitar técnico</button>
-          <button className="btn-primario" onClick={guardarMatriz}>Guardar matriz</button>
+        <div className="catalogo-acciones-cabecera">
+          <button
+            type="button"
+            className="btn-secundario"
+            onClick={() => setModalInvitar(true)}
+          >
+            Invitar técnico
+          </button>
+          <button type="button" className="btn-primario" onClick={guardarMatriz}>
+            Guardar matriz
+          </button>
         </div>
       </div>
 
-      <table className="tabla-datos" style={{ width: '100%', textAlign: 'left' }}>
+      {/* Tabla Matriz (Mockup 2.4) */}
+      <table className="catalogo-matriz-tabla">
         <thead>
           <tr>
-            <th>TÉCNICO</th>
-            <th>ESPECIALIDAD DECLARADA</th>
-            <th>CARGA ACTUAL</th>
-            {/* Cabeceras dinámicas basadas en tu db.json */}
-            {categorias.map(cat => (
-              <th key={cat.id} style={{ textAlign: 'center' }}>
+            <th style={{ width: '22%' }}>TÉCNICO</th>
+            <th style={{ width: '24%' }}>ESPECIALIDAD DECLARADA</th>
+            <th style={{ width: '12%', textAlign: 'center' }}>CARGA ACTUAL</th>
+            {categorias.map((cat) => (
+              <th key={cat.id}>
                 {cat.nombre.toUpperCase()}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {tecnicos.map(tec => {
-            // Transformar las IDs (ej. CAT-001) en nombres legibles (ej. Audiovisuales)
-            const nombresEspecialidades = (tec.especialidades || [])
-              .map(espId => categorias.find(c => c.id === espId)?.nombre)
+          {tecnicos.map((tec) => {
+            const carga = calcularCarga(tec.id);
+            // Nombres legibles de especialidades
+            const especialidadesNombres = (tec.especialidades || [])
+              .map((id) => categorias.find((c) => c.id === id)?.nombre)
               .filter(Boolean)
               .join(', ');
 
             return (
-              <tr key={tec.id}>
-                {/* Concatenar nombres y apellidos según el JSON */}
-                <td style={{ fontWeight: 'bold' }}>{tec.nombres} {tec.apellidos}</td>
-                <td>{nombresEspecialidades || 'Ninguna'}</td>
-                <td>{calcularCarga(tec.id)} tickets</td>
-                
-                {/* Cajas de verificación para cada categoría disponible */}
-                {categorias.map(cat => (
-                  <td key={cat.id} style={{ textAlign: 'center' }}>
-                    <input 
-                      type="checkbox" 
-                      checked={tec.especialidades?.includes(cat.id) || false}
-                      onChange={() => toggleCategoria(tec.id, cat.id)}
-                    />
-                  </td>
-                ))}
+              <tr key={tec.id} className="catalogo-fila-hijo">
+                <td style={{ fontWeight: 600, color: 'var(--color-text)' }}>
+                  {tec.nombres} {tec.apellidos}
+                </td>
+                <td style={{ color: 'var(--color-text-muted)', fontSize: '13px' }}>
+                  {especialidadesNombres || 'Ninguna asignada'}
+                </td>
+                <td style={{ textAlign: 'center', fontWeight: 600 }}>
+                  <span className="badge-conteo">{carga} tickets</span>
+                </td>
+                {categorias.map((cat) => {
+                  const habilitado = (tec.especialidades || []).includes(cat.id);
+                  return (
+                    <td key={cat.id} className="catalogo-matriz-check-celda">
+                      <input
+                        type="checkbox"
+                        checked={habilitado}
+                        onChange={() => toggleCategoria(tec.id, cat.id)}
+                        title={`${habilitado ? 'Deshabilitar' : 'Habilitar'} a ${tec.nombres} para ${cat.nombre}`}
+                      />
+                    </td>
+                  );
+                })}
               </tr>
             );
           })}
         </tbody>
       </table>
 
-      {/* Reglas de ayuda al pie del mockup */}
-      <div className="pie-vista" style={{ marginTop: '16px', color: '#5F6C78', fontSize: '13px' }}>
-        <p>
-          <span style={{ color: '#B7791F', fontWeight: 'bold' }}>Nota:</span> Climatización tiene solo dos técnicos habilitados y 5 tickets abiertos. Considera habilitar un tercero.
-        </p>
-        <p>
+      {/* Banner / Alerta operativa al pie (Mockup 2.4) */}
+      <div className="catalogo-matriz-nota-banner">
+        <div>
+          <strong>Nota de cobertura: </strong>
+          <span>
+            {alertaCobertura || 'La cobertura de técnicos es adecuada en todas las categorías activas.'}
+          </span>
+        </div>
+        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
           Carga actual = tickets asignados en estado abierto, en atención o en espera.
-        </p>
+        </div>
       </div>
+
+      {/* Modal Invitar Técnico */}
+      {modalInvitar && (
+        <div className="modal-overlay">
+          <div className="modal-contenido modal">
+            <div className="modal-cabecera">
+              <h3>Invitar técnico</h3>
+              <button
+                type="button"
+                className="btn-cerrar-modal"
+                onClick={() => setModalInvitar(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={procesarInvitacion}>
+              <div className="modal-cuerpo">
+                {errorInvitacion && (
+                  <div className="notificacion-banner notificacion-error" style={{ marginBottom: '12px' }}>
+                    <span>{errorInvitacion}</span>
+                  </div>
+                )}
+
+                <div className="catalogo-form-grupo">
+                  <label>NOMBRES</label>
+                  <input
+                    type="text"
+                    className="catalogo-form-input"
+                    placeholder="Ej. Roberto Carlos"
+                    value={invNombres}
+                    onChange={(e) => setInvNombres(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="catalogo-form-grupo">
+                  <label>APELLIDOS</label>
+                  <input
+                    type="text"
+                    className="catalogo-form-input"
+                    placeholder="Ej. Gómez Valdivia"
+                    value={invApellidos}
+                    onChange={(e) => setInvApellidos(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="catalogo-form-grupo">
+                  <label>CORREO INSTITUCIONAL</label>
+                  <input
+                    type="email"
+                    className="catalogo-form-input"
+                    placeholder="usuario@ulima.edu.pe"
+                    value={invCorreo}
+                    onChange={(e) => setInvCorreo(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="catalogo-form-grupo">
+                  <label>ESPECIALIDADES INICIALES (CATEGORÍAS)</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '6px' }}>
+                    {categorias.map((cat) => (
+                      <label key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+                        <input
+                          type="checkbox"
+                          checked={invEspecialidades.includes(cat.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setInvEspecialidades([...invEspecialidades, cat.id]);
+                            } else {
+                              setInvEspecialidades(invEspecialidades.filter((id) => id !== cat.id));
+                            }
+                          }}
+                        />
+                        <span>{cat.nombre}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-acciones">
+                <button
+                  type="button"
+                  className="btn-secundario"
+                  onClick={() => setModalInvitar(false)}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primario">
+                  Enviar invitación
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
