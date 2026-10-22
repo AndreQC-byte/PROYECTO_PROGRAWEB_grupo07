@@ -19,6 +19,7 @@ import ConfirmacionTicket from '../features/registro_seguimiento_tickets/Confirm
 import MisTickets from '../features/registro_seguimiento_tickets/MisTickets';
 import DetalleTicketUsuario from '../features/registro_seguimiento_tickets/DetalleTicketUsuario';
 import TicketCerradoEncuesta from '../features/registro_seguimiento_tickets/TicketCerradoEncuesta';
+import ColaTickets from '../features/cola_asignacion/ColaTickets';
 
 import LayoutEncuestas from '../features/encuestas/LayoutEncuestas';
 import MisEncuestas from '../features/encuestas/MisEncuestas';
@@ -106,7 +107,7 @@ const AppRouter = () => {
         {/* Rutas de Supervisor (Incluye tu HU-2)[cite: 4] */}
         <Route path="/supervisor/cola" element={
           <RutaProtegida rolesPermitidos={['Supervisor']}>
-            <VistaTemporal nombre="Cola de Atención" />
+            <ColaTickets />
           </RutaProtegida>
         } />
         <Route path="/catalogo/categorias" element={
