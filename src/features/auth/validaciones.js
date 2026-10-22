@@ -39,3 +39,13 @@ export const validarConfirmacion = (contrasena, confirmacion) => {
   if (contrasena !== confirmacion) return 'Las contraseñas no coinciden';
   return '';
 };
+
+export const ETIQUETAS_FORTALEZA = ['', 'Débil', 'Aceptable', 'Segura'];
+
+export const calcularFortaleza = (valor) => {
+  if (!valor) return 0;
+  if (validarContrasena(valor)) return 1; // no cumple las reglas mínimas
+  const larga = valor.length >= 12;
+  const conSimbolo = /[^A-Za-z0-9]/.test(valor);
+  return larga || conSimbolo ? 3 : 2;
+};

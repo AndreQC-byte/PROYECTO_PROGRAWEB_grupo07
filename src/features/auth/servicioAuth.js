@@ -299,3 +299,78 @@ export const rechazarInvitacion = (id) => {
   guardarInvitaciones();
   return { ok: true };
 };
+
+// ---------- Recuperación de contraseña ----------
+export const MINUTOS_VIGENCIA_ENLACE = 30;
+const CLAVE_ENLACES = 'mesaAyuda.enlacesRecuperacion';
+
+const leerEnlaces = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CLAVE_ENLACES)) || {};
+  } catch {
+    return {};
+  }
+};
+
+const enlaces = leerEnlaces();
+
+const guardarEnlaces = () => {
+  try {
+    localStorage.setItem(CLAVE_ENLACES, JSON.stringify(enlaces));
+  } catch {
+  }
+};
+
+export const solicitarRestablecimiento = (correo) => {
+  const usuario = usuarios.find(
+    (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
+  );
+  if (!usuario) return { ok: true, token: null };
+
+  // Un enlace nuevo invalida los anteriores de esa cuenta
+  Object.values(enlaces).forEach((enlace) => {
+    if (enlace.usuarioId === usuario.id) enlace.usado = true;
+  });
+
+  const token = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+  enlaces[token] = {
+    usuarioId: usuario.id,
+    expira: new Date(Date.now() + MINUTOS_VIGENCIA_ENLACE * 60 * 1000).toISOString(),
+    usado: false,
+  };
+  guardarEnlaces();
+  return { ok: true, token };
+};
+
+
+export const consultarEnlaceRestablecimiento = (token) => {
+  const enlace = enlaces[token];
+  if (!enlace) return { situacion: 'inexistente' };
+  if (enlace.usado) return { situacion: 'usado' };
+  if (new Date(enlace.expira) < new Date()) return { situacion: 'vencido' };
+  return { situacion: 'valido' };
+};
+
+export const restablecerContrasena = (token, nuevaContrasena) => {
+  const { situacion } = consultarEnlaceRestablecimiento(token);
+  if (situacion !== 'valido') {
+    return { ok: false, mensaje: 'Este enlace ya no es válido. Solicita uno nuevo.' };
+  }
+
+  const usuario = usuarios.find((u) => u.id === enlaces[token].usuarioId);
+  if (!usuario) {
+    return { ok: false, mensaje: 'No pudimos encontrar la cuenta. Solicita un enlace nuevo.' };
+  }
+  if (usuario.contrasena === nuevaContrasena) {
+    return { ok: false, mensaje: 'La nueva contraseña no puede ser igual a la actual.' };
+  }
+
+  usuario.contrasena = nuevaContrasena;
+  // Cambiar la contraseña también levanta el bloqueo temporal por intentos fallidos
+  usuario.intentosFallidos = 0;
+  usuario.bloqueadoHasta = null;
+  enlaces[token].usado = true;
+  guardarCambios();
+  guardarEnlaces();
+  return { ok: true };
+};

@@ -675,3 +675,100 @@
   flex-direction: column;
   gap: 16px;
 }
+
+/* ---------- Recuperar contraseña ---------- */
+
+.auth-pila {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form--compacto .btn-primario {
+  width: auto;
+  height: 36px;
+  padding: 0 16px;
+}
+
+.auth-pasos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--text-auxiliar);
+}
+
+.auth-paso-num {
+  width: 24px;
+  text-align: center;
+  font: 600 var(--text-etiqueta) / 24px var(--font-mono);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-muted);
+}
+
+.auth-paso-num--activo {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.auth-paso-num--hecho {
+  background-color: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.auth-pasos-linea {
+  flex: 1;
+  min-width: 16px;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.auth-icono-exito {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-success);
+  border-radius: var(--border-radius);
+  background-color: #E8F3EC;
+  color: var(--color-success);
+  font-size: 20px;
+}
+
+.auth-medidor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-medidor-barras {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.auth-medidor-barra {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--border-radius);
+  background-color: var(--color-border);
+}
+
+.auth-medidor-barra--n1 { background-color: var(--color-danger); }
+.auth-medidor-barra--n2 { background-color: var(--color-warning); }
+.auth-medidor-barra--n3 { background-color: var(--color-success); }
+
+.auth-medidor-texto {
+  min-width: 72px;
+  text-align: right;
+  font-size: var(--text-auxiliar);
+  line-height: var(--lh-auxiliar);
+}
+
+.auth-medidor-texto--n1 { color: var(--color-danger); }
+.auth-medidor-texto--n2 { color: var(--color-warning); }
+.auth-medidor-texto--n3 { color: var(--color-success); }

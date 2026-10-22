@@ -5,6 +5,7 @@ import LayoutPublico from '../features/auth/LayoutPublico';
 import Landing from '../features/auth/Landing';
 import Login from '../features/auth/Login';
 import Registro from '../features/auth/Registro';
+import RecuperarPassword from '../features/auth/RecuperarPassword';
 import AltaInvitacion from '../features/auth/AltaInvitacion';
 import ListaCategorias from '../features/catalogo/ListaCategorias';
 import LayoutAtencion from '../features/atencion_cierre_tickets/LayoutAtencion';
@@ -48,6 +49,8 @@ const AppRouter = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/invitacion/:id" element={<AltaInvitacion />} />
+          <Route path="/recuperar" element={<RecuperarPassword />} />
+          <Route path="/recuperar/:token" element={<RecuperarPassword />} />
         </Route>
 
         {/* Redirección a la vista principal según el rol (Requerimiento HU-1)[cite: 3] */}
