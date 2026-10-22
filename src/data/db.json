@@ -735,5 +735,52 @@
       "puntajeSolucion": 5,
       "comentario": "Todo limpio en menos de una hora."
     }
+  ],
+
+  "invitaciones": [
+    {
+      "id": "INV-001",
+      "nombres": "Diego Alonso",
+      "apellidos": "Ramírez Cueva",
+      "correo": "dramirez@ulima.edu.pe",
+      "rol": "Técnico",
+      "invitadoPorId": "USR-003",
+      "fechaEnvio": "2026-10-15T09:00:00Z",
+      "fechaExpiracion": "2026-12-31T23:59:00Z",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "INV-002",
+      "nombres": "Patricia Elena",
+      "apellidos": "Vargas Núñez",
+      "correo": "pvargas@ulima.edu.pe",
+      "rol": "Supervisor",
+      "invitadoPorId": "USR-003",
+      "fechaEnvio": "2026-10-15T09:00:00Z",
+      "fechaExpiracion": "2026-12-31T23:59:00Z",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "INV-003",
+      "nombres": "Raúl Ernesto",
+      "apellidos": "Campos Díaz",
+      "correo": "rcampos@ulima.edu.pe",
+      "rol": "Técnico",
+      "invitadoPorId": "USR-003",
+      "fechaEnvio": "2026-09-05T09:00:00Z",
+      "fechaExpiracion": "2026-09-12T23:59:00Z",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "INV-004",
+      "nombres": "Mónica Lucía",
+      "apellidos": "Torres Aguilar",
+      "correo": "mtorres@ulima.edu.pe",
+      "rol": "Técnico",
+      "invitadoPorId": "USR-003",
+      "fechaEnvio": "2026-10-01T09:00:00Z",
+      "fechaExpiracion": "2026-12-31T23:59:00Z",
+      "estado": "Rechazada"
+    }
   ]
 }

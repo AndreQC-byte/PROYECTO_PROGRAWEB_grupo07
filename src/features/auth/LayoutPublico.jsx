@@ -1,8 +1,6 @@
 import { Link, Outlet } from 'react-router-dom';
 import '../../styles/auth.css';
 
-// Marco de las pantallas públicas (visitante): cabecera, contenido y pie.
-// Las pantallas se muestran en <Outlet />.
 export default function LayoutPublico() {
   return (
     <div className="auth-pagina">

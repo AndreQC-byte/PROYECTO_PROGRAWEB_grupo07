@@ -51,8 +51,12 @@ export const AuthProvider = ({ children }) => {
     setUsuario(null);
   };
 
+  const refrescarUsuario = () => {
+  setUsuario((actual) => (actual ? servicioAuth.obtenerUsuarioPorId(actual.id) : actual));
+  };
+
   return (
-    <AuthContext.Provider value={{ usuario, iniciarSesion, cerrarSesion }}>
+    <AuthContext.Provider value={{ usuario, iniciarSesion, cerrarSesion, refrescarUsuario }}>
       {children}
     </AuthContext.Provider>
   );
