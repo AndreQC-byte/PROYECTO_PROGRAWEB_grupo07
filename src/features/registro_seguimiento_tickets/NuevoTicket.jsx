@@ -1,28 +1,24 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layout/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
-
-const subcategoriasPorCategoria = {
-    "Audiovisuales": ["Proyector no enciende", "Imagen distorsionada"],
-    "Redes y conectividad": ["Sin internet", "Wi-Fi lento"],
-    "Climatización": ["Aire no enfría", "Aire con ruido"],
-    "Eléctrico": ["Sin energía", "Tomacorriente dañado"],
-    "Accesos y cerraduras": ["Cerradura trabada", "Tarjeta no abre"],
-    "Mobiliario": ["Silla dañada", "Mesa dañada"],
-    "Limpieza": ["Aula sucia", "Residuos acumulados"],
-};
-
-const categorias = Object.keys(subcategoriasPorCategoria);
-
-// Tickets de PRUEBA
-const ticketsExistentes = [
-    { codigo: "TCK-2026-00147", categoria: "Audiovisuales", ambiente: "A-201", estado: "Abierto" },
-    { codigo: "TCK-2026-00152", categoria: "Climatización", ambiente: "B-105", estado: "En atención" },
-    { codigo: "TCK-2026-00098", categoria: "Mobiliario", ambiente: "A-201", estado: "Cerrado" },
-];
+import { useAuth } from "../../context/AuthContext";
+import { useTickets } from "./almacenTickets";
+import {
+    obtenerCategoriasActivas,
+    obtenerSubcategoriasDe,
+    buscarAmbientePorCodigo,
+    describirAmbiente,
+    buscarDuplicado,
+    minutosDesde,
+} from "./servicioTickets";
+import {
+    obtenerAmbiente,
+    obtenerCategoria,
+    formatearDuracion,
+} from "../atencion_cierre_tickets/servicioAtencion";
 
 const recomendaciones = [
     "El código del ambiente tal como aparece en la puerta.",
@@ -34,51 +30,71 @@ const recomendaciones = [
 
 function NuevoTicket() {
     const navigate = useNavigate();
-    const [categoria, setCategoria] = useState(categorias[0]);
-    const [subcategoria, setSubcategoria] = useState(
-        subcategoriasPorCategoria[categorias[0]][0]
+    const { state } = useLocation();
+    const { usuario } = useAuth();
+    const { tickets, registrarTicket } = useTickets();
+
+    // Si venimos de "Reabrir ticket", llegan la categoría, la subcategoría y el ambiente del ticket anterior
+    const reabrir = state?.reabrir;
+
+    const categorias = obtenerCategoriasActivas();
+    const categoriaInicial = reabrir?.categoriaId || categorias[0].id;
+
+    const [categoriaId, setCategoriaId] = useState(categoriaInicial);
+    const [subcategoriaId, setSubcategoriaId] = useState(
+        reabrir?.subcategoriaId || obtenerSubcategoriasDe(categoriaInicial)[0]?.id || ""
     );
-    const [ambiente, setAmbiente] = useState("");
+    const [ambiente, setAmbiente] = useState(reabrir?.ambienteCodigo || "");
     const [asunto, setAsunto] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [duplicado, setDuplicado] = useState(null); // null o el ticket repetido
+    const [errorRegistro, setErrorRegistro] = useState(false);
+
+    const subcategorias = obtenerSubcategoriasDe(categoriaId);
+    const subcategoria = subcategorias.find((s) => s.id === subcategoriaId);
+    const ambienteEncontrado = ambiente.trim() ? buscarAmbientePorCodigo(ambiente) : null;
+    const ambienteInvalido = ambiente.trim() !== "" && !ambienteEncontrado;
 
     function cambiarCategoria(e) {
         const nueva = e.target.value;
-        setCategoria(nueva);
-        setSubcategoria(subcategoriasPorCategoria[nueva][0]);
+        setCategoriaId(nueva);
+        setSubcategoriaId(obtenerSubcategoriasDe(nueva)[0]?.id || "");
+        setDuplicado(null);
+    }
+
+    function cambiarAmbiente(e) {
+        setAmbiente(e.target.value);
+        setDuplicado(null);
     }
 
     function registrar(e) {
         e.preventDefault();
+        setErrorRegistro(false);
 
-        const repetido = ticketsExistentes.find(
-            (t) =>
-                t.categoria === categoria &&
-                t.ambiente.toLowerCase() === ambiente.trim().toLowerCase() &&
-                t.estado !== "Cerrado"
-        );
+        // El texto de ayuda del campo ya explica que ese ambiente no existe
+        if (!ambienteEncontrado) return;
 
+        const repetido = buscarDuplicado(tickets, ambienteEncontrado.id, categoriaId);
         if (repetido) {
             setDuplicado(repetido);
             return;
         }
 
-        // Código de prueba: el real lo asignará el sistema
-        const ultimo = Math.max(
-            ...ticketsExistentes.map((t) => Number(t.codigo.slice(-5)))
-        );
-        const codigo = `TCK-2026-${String(ultimo + 1).padStart(5, "0")}`;
-
-        navigate("/mis-tickets/nuevo/registrado", {
-            state: {
-                codigo,
-                categoria,
-                subcategoria,
-                ambiente: ambiente.trim(),
-                prioridad: "Crítica",
-            },
-        });
+        try {
+            const nuevo = registrarTicket({
+                usuarioId: usuario.id,
+                categoriaId,
+                subcategoriaId,
+                ambienteId: ambienteEncontrado.id,
+                asunto: asunto.trim(),
+                descripcion: descripcion.trim(),
+                origen: reabrir ? { ticketId: reabrir.ticketId, motivo: reabrir.motivo } : null,
+            });
+            navigate("/mis-tickets/nuevo/registrado", { state: { ticketId: nuevo.id } });
+        } catch (error) {
+            console.error(error);
+            setErrorRegistro(true);
+        }
     }
 
     return (
@@ -93,13 +109,28 @@ function NuevoTicket() {
                         el supervisor puede ajustarla.
                     </p>
 
+                    {reabrir && (
+                        <p className="aviso-reapertura">
+                            Estás registrando un ticket a partir de {reabrir.ticketId}. Copiamos la
+                            categoría, la subcategoría y el ambiente: falta que escribas el asunto y la
+                            descripción.
+                        </p>
+                    )}
+
                     {duplicado && (
                         <div id="alerta">
                             <p>
-                                Ya existe un ticket abierto para {ambiente.trim()} en {categoria}:{" "}
-                                {duplicado.codigo}. Revísalo antes de crear otro.
+                                Ya existe un ticket abierto para {obtenerAmbiente(duplicado.ambienteId)?.codigo} en{" "}
+                                {obtenerCategoria(duplicado.categoriaId)?.nombre}: {duplicado.id}, registrado hace{" "}
+                                {formatearDuracion(minutosDesde(duplicado.fechaRegistro))}. Revísalo antes de crear otro.
                             </p>
-                            <a href="#">Ver ese ticket</a>
+                            <Link to={`/mis-tickets/${duplicado.id}`}>Ver ese ticket</Link>
+                        </div>
+                    )}
+
+                    {errorRegistro && (
+                        <div className="notificacion-error" role="alert">
+                            No pudimos registrar el ticket. Revisa tu conexión e inténtalo otra vez.
                         </div>
                     )}
 
@@ -108,9 +139,11 @@ function NuevoTicket() {
                             <div id="primerafila">
                                 <div id="catego">
                                     <label htmlFor="categoria">Categoría</label>
-                                    <select id="categoria" value={categoria} onChange={cambiarCategoria}>
+                                    <select id="categoria" value={categoriaId} onChange={cambiarCategoria}>
                                         {categorias.map((c) => (
-                                            <option key={c}>{c}</option>
+                                            <option key={c.id} value={c.id}>
+                                                {c.nombre}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
@@ -118,11 +151,13 @@ function NuevoTicket() {
                                     <label htmlFor="subcategoria">Subcategoría</label>
                                     <select
                                         id="subcategoria"
-                                        value={subcategoria}
-                                        onChange={(e) => setSubcategoria(e.target.value)}
+                                        value={subcategoriaId}
+                                        onChange={(e) => setSubcategoriaId(e.target.value)}
                                     >
-                                        {subcategoriasPorCategoria[categoria].map((s) => (
-                                            <option key={s}>{s}</option>
+                                        {subcategorias.map((s) => (
+                                            <option key={s.id} value={s.id}>
+                                                {s.nombre}
+                                            </option>
                                         ))}
                                     </select>
                                     <small>Depende de la categoría elegida.</small>
@@ -138,17 +173,25 @@ function NuevoTicket() {
                                             type="text"
                                             placeholder="Ej. A-201"
                                             value={ambiente}
-                                            onChange={(e) => setAmbiente(e.target.value)}
+                                            onChange={cambiarAmbiente}
                                             required
                                         />
                                         <button type="button">Buscar</button>
                                     </div>
-                                    <small>Aula - Pabellón A - piso 2</small>
+                                    <small className={ambienteInvalido ? "error-campo" : undefined}>
+                                        {ambienteEncontrado
+                                            ? describirAmbiente(ambienteEncontrado)
+                                            : ambienteInvalido
+                                                ? "No encontramos ese ambiente. Revisa el código."
+                                                : "Escribe el código del ambiente."}
+                                    </small>
                                 </div>
                                 <div className="prio">
                                     <label>Prioridad sugerida</label>
                                     <div className="prioridad">
-                                        <EtiquetaPrioridad prioridad="Crítica" />
+                                        {subcategoria && (
+                                            <EtiquetaPrioridad prioridad={subcategoria.prioridadDefecto} />
+                                        )}
                                         <span>Sugerida por la subcategoría</span>
                                     </div>
                                 </div>
@@ -192,7 +235,11 @@ function NuevoTicket() {
                                 <button type="submit" className="btn-primario">
                                     Registrar ticket
                                 </button>
-                                <button type="button" className="btn-secundario">
+                                <button
+                                    type="button"
+                                    className="btn-secundario"
+                                    onClick={() => navigate("/mis-tickets")}
+                                >
                                     Cancelar
                                 </button>
                             </div>
@@ -207,13 +254,15 @@ function NuevoTicket() {
                                     ))}
                                 </ul>
                             </div>
-                            <div className="aviso">
-                                <p>Tiempo esperado para esta categoría</p>
-                                <p>
-                                    Prioridad crítica: atención dentro de 2 horas hábiles desde el
-                                    registro.
-                                </p>
-                            </div>
+                            {subcategoria && (
+                                <div className="aviso">
+                                    <p>Tiempo esperado para esta categoría</p>
+                                    <p>
+                                        Prioridad {subcategoria.prioridadDefecto.toLowerCase()}: atención dentro de{" "}
+                                        {subcategoria.tiempoEsperadoHoras} horas hábiles desde el registro.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </main>

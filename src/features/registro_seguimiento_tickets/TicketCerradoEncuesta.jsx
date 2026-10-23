@@ -4,54 +4,77 @@ import Boton from "../../components/common/Boton";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
 import ModalReabrirTicket from "./ModalReabrirTicket";
 
+// Todos los datos llegan ya formateados desde DetalleTicketUsuario (ver datosCierre en servicioTickets.js)
 const TicketCerradoEncuesta = ({
-    codigo = "TCK-2026-00131",
-    estado = "Cerrado",
-    fechaResolucion = "03/09/2026",
-    resueltoPor = "Rocío Espinoza Farfán",
-    solucion = "limpieza profunda del ambiente y retiro de residuos del evento.",
-    fechaLimiteEncuesta = "10/09/2026",
+    codigo,
+    estado,
+    fechaResolucion,
+    resueltoPor,
+    solucion,
+    fechaLimite, // último día para responder la encuesta y reabrir (7 días después del cierre)
+    encuestaPendiente = false,
+    vencido = false,
     onResponderEncuesta,
     onReabrirConfirmado,
 }) => {
     const [mostrarModal, setMostrarModal] = useState(false);
 
+    const titulo =
+        encuestaPendiente && !vencido ? "CERRADO CON ENCUESTA PENDIENTE" : estado.toUpperCase();
+
     return (
         <>
             <div className="ticket-cerrado-encuesta">
-                <p className="tce-estado">CERRADO CON ENCUESTA PENDIENTE</p>
+                <p className="tce-estado">{titulo}</p>
 
                 <p className="tce-codigo">
                     {codigo} <EtiquetaEstado estado={estado} />
                 </p>
 
-                <div className="tce-aviso tce-aviso-resuelto">
-                    Resuelto el {fechaResolucion} por {resueltoPor}. Solución: {solucion}
-                </div>
+                {fechaResolucion && (
+                    <div className="tce-aviso tce-aviso-resuelto">
+                        Resuelto el {fechaResolucion}
+                        {resueltoPor && ` por ${resueltoPor}`}.
+                        {solucion && ` Solución: ${solucion}`}
+                    </div>
+                )}
 
-                <div className="tce-aviso tce-aviso-pendiente">
-                    Tienes una encuesta pendiente para este ticket. Puedes responderla
-                    hasta el {fechaLimiteEncuesta}.
-                </div>
+                {encuestaPendiente && !vencido && (
+                    <div className="tce-aviso tce-aviso-pendiente">
+                        Tienes una encuesta pendiente para este ticket. Puedes responderla
+                        hasta el {fechaLimite} (7 días después del cierre).
+                    </div>
+                )}
 
-                <div className="tce-botones">
-                    <Boton tipo="primario" onClick={onResponderEncuesta}>
-                        Responder encuesta
-                    </Boton>
-                    <Boton tipo="reabrir" onClick={() => setMostrarModal(true)}>
-                        Reabrir ticket
-                    </Boton>
-                </div>
+                {vencido && (
+                    <div className="tce-aviso tce-aviso-pendiente">
+                        El plazo de 7 días para responder la encuesta y reabrir este ticket
+                        venció el {fechaLimite}. Si el problema continúa, registra un ticket nuevo.
+                    </div>
+                )}
+
+                {!vencido && (
+                    <div className="tce-botones">
+                        {encuestaPendiente && (
+                            <Boton tipo="primario" onClick={onResponderEncuesta}>
+                                Responder encuesta
+                            </Boton>
+                        )}
+                        <Boton tipo="reabrir" onClick={() => setMostrarModal(true)}>
+                            Reabrir ticket
+                        </Boton>
+                    </div>
+                )}
             </div>
 
             {mostrarModal && (
                 <ModalReabrirTicket
                     codigo={codigo}
-                    fechaLimite={fechaLimiteEncuesta}
+                    fechaLimite={fechaLimite}
                     onCerrar={() => setMostrarModal(false)}
                     onConfirmar={(motivo) => {
-                        if (onReabrirConfirmado) onReabrirConfirmado(motivo);
                         setMostrarModal(false);
+                        if (onReabrirConfirmado) onReabrirConfirmado(motivo);
                     }}
                 />
             )}

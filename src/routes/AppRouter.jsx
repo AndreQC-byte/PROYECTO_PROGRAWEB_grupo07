@@ -25,7 +25,6 @@ import NuevoTicket from '../features/registro_seguimiento_tickets/NuevoTicket';
 import ConfirmacionTicket from '../features/registro_seguimiento_tickets/ConfirmacionTicket';
 import MisTickets from '../features/registro_seguimiento_tickets/MisTickets';
 import DetalleTicketUsuario from '../features/registro_seguimiento_tickets/DetalleTicketUsuario';
-import TicketCerradoEncuesta from '../features/registro_seguimiento_tickets/TicketCerradoEncuesta';
 
 // HU-4: Cola y asignación
 import ColaTickets from '../features/cola_asignacion/ColaTickets';
@@ -199,23 +198,6 @@ const AppRouter = () => {
             </RutaProtegida>
           }
         />
-        <Route
-          path="/mis-tickets/cerrado"
-          element={
-            <RutaProtegida rolesPermitidos={['Usuario']}>
-              <TicketCerradoEncuesta />
-            </RutaProtegida>
-          }
-        />
-        <Route
-          path="/mis-tickets/cerrado/reabrir"
-          element={
-            <RutaProtegida rolesPermitidos={['Usuario']}>
-              <TicketCerradoEncuesta />
-            </RutaProtegida>
-          }
-        />
-
         {/* HU-6: Encuestas de satisfacción (Usuario con ProveedorEncuestas) */}
         <Route
           element={

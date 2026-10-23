@@ -1,113 +1,57 @@
 import { useRef, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layout/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
-
-// Devuelve la fecha y hora actuales con el formato "07/09/2026 08:12"
-function fechaActual() {
-    const d = new Date();
-    const dos = (n) => String(n).padStart(2, "0");
-    return `${dos(d.getDate())}/${dos(d.getMonth() + 1)}/${d.getFullYear()} ${dos(d.getHours())}:${dos(d.getMinutes())}`;
-}
-
-// Usuario de PRUEBA que escribe los comentarios: luego saldrá de la sesión
-const USUARIO_ACTUAL = {
-    nombre: "Camila Quispe Ramos",
-    iniciales: "CQ",
-    rol: "Usuario",
-};
-
-// Tickets de PRUEBA con su detalle (por ahora solo existe uno completo)
-const ticketsDetalle = {
-    "TCK-2026-00147": {
-        codigo: "TCK-2026-00147",
-        asunto: "Proyector no enciende en aula A-201",
-        prioridad: "Crítica",
-        estado: "En atención",
-        categoria: "Audiovisuales",
-        subcategoria: "Proyector no enciende",
-        ambiente: "A-201",
-        registrado: "07/09/2026 08:12",
-        tecnico: "Julio Paredes Soto",
-        atencionEsperada: "Antes de 10:12",
-        bitacora: [
-            {
-                iniciales: "CQ",
-                nombre: "Camila Quispe Ramos",
-                rol: "Usuario",
-                fecha: "07/09/2026 08:12",
-                texto: "El proyector enciende el foco pero la imagen no llega. Ya probé con dos laptops distintas y el mismo cable.",
-            },
-            {
-                iniciales: "LM",
-                nombre: "Lucía Mendoza Ríos",
-                rol: "Supervisor",
-                fecha: "07/09/2026 08:20",
-                texto: "Asignamos tu ticket a Julio Paredes. Se atenderá antes del inicio de la clase de 10:00.",
-            },
-            {
-                iniciales: "JP",
-                nombre: "Julio Paredes Soto",
-                rol: "Técnico",
-                fecha: "07/09/2026 09:05",
-                texto: "Subí al aula con un cable de reemplazo. La imagen vuelve con conexión directa; el problema está en el extensor del rack.",
-            },
-        ],
-        hitos: [
-            { tipo: "abierto", titulo: "Abierto", detalle: "07/09/2026 08:12 - registrado por ti" },
-            { tipo: "asignado", titulo: "Asignado", detalle: "07/09/2026 08:20 - Lucía Mendoza Ríos" },
-            { tipo: "actual", titulo: "En atención", detalle: "07/09/2026 08:41 - Julio Paredes Soto" },
-            { tipo: "pendiente", titulo: "Resuelto", detalle: "Pendiente" },
-        ],
-    },
-};
-
-// Arma el detalle de un ticket recién registrado con los datos del formulario
-function crearTicketNuevo(datos) {
-    return {
-        codigo: datos.codigo,
-        asunto: datos.asunto,
-        prioridad: datos.prioridad,
-        estado: "Abierto",
-        categoria: datos.categoria,
-        subcategoria: datos.subcategoria,
-        ambiente: datos.ambiente,
-        registrado: datos.registrado,
-        tecnico: "Sin asignar",
-        atencionEsperada: "2 horas hábiles desde el registro",
-        bitacora: [
-            {
-                iniciales: USUARIO_ACTUAL.iniciales,
-                nombre: USUARIO_ACTUAL.nombre,
-                rol: USUARIO_ACTUAL.rol,
-                fecha: datos.registrado,
-                texto: datos.descripcion,
-            },
-        ],
-        hitos: [
-            { tipo: "abierto", titulo: "Abierto", detalle: `${datos.registrado} - registrado por ti` },
-            { tipo: "pendiente", titulo: "Asignado", detalle: "Pendiente" },
-            { tipo: "pendiente", titulo: "En atención", detalle: "Pendiente" },
-            { tipo: "pendiente", titulo: "Resuelto", detalle: "Pendiente" },
-        ],
-    };
-}
+import TicketCerradoEncuesta from "./TicketCerradoEncuesta";
+import { useAuth } from "../../context/AuthContext";
+import { useTickets } from "./almacenTickets";
+import {
+    ESTADOS_TERMINADOS,
+    comentariosPublicos,
+    construirLineaTiempo,
+    datosCierre,
+    encuestaPendienteDe,
+    fechaLimiteAtencion,
+    formatearDia,
+    formatearFechaHora,
+} from "./servicioTickets";
+import {
+    iniciales,
+    nombreCorto,
+    obtenerAmbiente,
+    obtenerCategoria,
+    obtenerSubcategoria,
+    obtenerUsuario,
+} from "../atencion_cierre_tickets/servicioAtencion";
 
 function DetalleTicketUsuario() {
     const { codigo } = useParams();
-    const { state } = useLocation();
+    const navigate = useNavigate();
+    const { usuario } = useAuth();
+    const { tickets, encuestas, agregarComentario } = useTickets();
 
-    // Primero busca en los tickets de prueba; si no está, usa los datos del ticket recién registrado
-    const ticket =
-        ticketsDetalle[codigo] ||
-        (state && state.codigo === codigo ? crearTicketNuevo(state) : null);
-
-    const [bitacora, setBitacora] = useState(ticket ? ticket.bitacora : []);
+    const ticket = tickets.find((t) => t.id === codigo);
+    
     const [comentario, setComentario] = useState("");
     const comentarioRef = useRef(null);
+
+    const cerrado = ticket?.estado === "Cerrado";
+    const terminado = ticket ? ESTADOS_TERMINADOS.includes(ticket.estado) : false;
+    const tecnico = ticket ? obtenerUsuario(ticket.tecnicoAsignadoId) : null;
+    const hitos = ticket ? construirLineaTiempo(ticket, encuestas) : [];
+    const cierre = ticket && terminado ? datosCierre(ticket, encuestas) : null;
+    const encuestaPendiente = ticket ? Boolean(encuestaPendienteDe(ticket, encuestas)) : false;
+
+    // Primero la descripción del usuario; luego los comentarios públicos del equipo (las notas internas no se ven)
+    const mensajes = ticket
+        ? [
+            { autorId: ticket.usuarioId, fecha: ticket.fechaRegistro, mensaje: ticket.descripcion },
+            ...[...comentariosPublicos(ticket)].sort((a, b) => new Date(a.fecha) - new Date(b.fecha)),
+        ]
+        : [];
 
     function irAComentario() {
         comentarioRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -120,17 +64,23 @@ function DetalleTicketUsuario() {
         const texto = comentario.trim();
         if (!texto) return;
 
-        setBitacora([
-            ...bitacora,
-            {
-                iniciales: USUARIO_ACTUAL.iniciales,
-                nombre: USUARIO_ACTUAL.nombre,
-                rol: USUARIO_ACTUAL.rol,
-                fecha: fechaActual(),
-                texto,
-            },
-        ]);
+        agregarComentario(ticket.id, usuario.id, texto);
         setComentario("");
+    }
+
+    // Al confirmar el motivo en el modal, se va al formulario con los datos del ticket copiados
+    function reabrir(motivo) {
+        navigate("/mis-tickets/nuevo", {
+            state: {
+                reabrir: {
+                    ticketId: ticket.id,
+                    motivo,
+                    categoriaId: ticket.categoriaId,
+                    subcategoriaId: ticket.subcategoriaId,
+                    ambienteCodigo: obtenerAmbiente(ticket.ambienteId)?.codigo,
+                },
+            },
+        });
     }
 
     return (
@@ -150,88 +100,134 @@ function DetalleTicketUsuario() {
                     ) : (
                         <>
                             <p id="ticketselecc">
-                                <Link to="/mis-tickets">Mis tickets</Link> - {ticket.codigo}
+                                <Link to="/mis-tickets">Mis tickets</Link> - {ticket.id}
                             </p>
 
                             <div className="contenido">
                                 <div className="codigoestado">
-                                    <h1 id="codigo">{ticket.codigo}</h1>
+                                    <h1 id="codigo">{ticket.id}</h1>
                                     <EtiquetaPrioridad prioridad={ticket.prioridad} />
                                     <EtiquetaEstado estado={ticket.estado} />
                                 </div>
-                                <button
-                                    type="button"
-                                    className="btn-secundario botonagregar"
-                                    onClick={irAComentario}
-                                >
-                                    Agregar información
-                                </button>
+                                {!cerrado && (
+                                    <button
+                                        type="button"
+                                        className="btn-secundario botonagregar"
+                                        onClick={irAComentario}
+                                    >
+                                        Agregar información
+                                    </button>
+                                )}
                             </div>
 
                             <h2 id="asunto">{ticket.asunto}</h2>
+
+                            {terminado && cierre && (
+                                <TicketCerradoEncuesta
+                                    codigo={ticket.id}
+                                    estado={ticket.estado}
+                                    fechaResolucion={formatearFechaHora(cierre.fechaResolucion)}
+                                    resueltoPor={cierre.resueltoPor}
+                                    solucion={cierre.solucion}
+                                    fechaLimite={formatearDia(cierre.fechaLimite)}
+                                    encuestaPendiente={encuestaPendiente}
+                                    vencido={cierre.vencido}
+                                    // TODO: cambia esta ruta por la de tu pantalla de encuesta
+                                    onResponderEncuesta={() => navigate(`/encuestas/${ticket.id}`)}
+                                    onReabrirConfirmado={reabrir}
+                                />
+                            )}
 
                             <div className="columnas">
                                 <section className="dt-bitacora">
                                     <h3>Bitácora de la atención</h3>
 
-                                    {bitacora.map((m, i) => (
-                                        <div className="mensaje" key={i}>
-                                            <div className="persona">
-                                                <span
-                                                    className={
-                                                        m.rol === "Usuario" ? "avatar" : "avatar azul"
-                                                    }
-                                                >
-                                                    {m.iniciales}
-                                                </span>
-                                                <strong>{m.nombre}</strong>
+                                    {mensajes.map((m, i) => {
+                                        const autor = obtenerUsuario(m.autorId);
+                                        const rol = autor?.rol || "Usuario";
+                                        return (
+                                            <div className="mensaje" key={m.id || i}>
+                                                <div className="persona">
+                                                    <span className={rol === "Usuario" ? "avatar" : "avatar azul"}>
+                                                        {iniciales(autor)}
+                                                    </span>
+                                                    <strong>{nombreCorto(autor)}</strong>
+                                                    <small>
+                                                        {rol} - {formatearFechaHora(m.fecha)}
+                                                    </small>
+                                                </div>
+                                                <p>{m.mensaje}</p>
+                                            </div>
+                                        );
+                                    })}
+
+                                    {cerrado ? (
+                                        <p className="aviso-cerrado">
+                                            Este ticket está cerrado: ya no admite nuevos comentarios.
+                                        </p>
+                                    ) : (
+                                        <form onSubmit={enviarComentario}>
+                                            <label htmlFor="comentario">Agregar información</label>
+                                            <textarea
+                                                id="comentario"
+                                                ref={comentarioRef}
+                                                placeholder="Escribe aquí si tienes un dato nuevo que ayude al técnico..."
+                                                value={comentario}
+                                                onChange={(e) => setComentario(e.target.value)}
+                                                required
+                                            />
+                                            <div className="enviar">
+                                                <button type="submit" className="btn-primario">
+                                                    Enviar comentario
+                                                </button>
                                                 <small>
-                                                    {m.rol} - {m.fecha}
+                                                    Las notas internas del equipo técnico no se muestran aquí.
                                                 </small>
                                             </div>
-                                            <p>{m.texto}</p>
-                                        </div>
-                                    ))}
-
-                                    <form onSubmit={enviarComentario}>
-                                        <label htmlFor="comentario">Agregar información</label>
-                                        <textarea
-                                            id="comentario"
-                                            ref={comentarioRef}
-                                            placeholder="Escribe aquí si tienes un dato nuevo que ayude al técnico..."
-                                            value={comentario}
-                                            onChange={(e) => setComentario(e.target.value)}
-                                            required
-                                        />
-                                        <div className="enviar">
-                                            <button type="submit" className="btn-primario">
-                                                Enviar comentario
-                                            </button>
-                                            <small>
-                                                Las notas internas del equipo técnico no se muestran aquí.
-                                            </small>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    )}
                                 </section>
 
                                 <div className="lateral">
                                     <section className="reporte">
                                         <h3>Datos del reporte</h3>
-                                        <div className="fila"><span>Categoría</span><span>{ticket.categoria}</span></div>
-                                        <div className="fila"><span>Subcategoría</span><span>{ticket.subcategoria}</span></div>
-                                        <div className="fila"><span>Ambiente</span><span>{ticket.ambiente}</span></div>
-                                        <div className="fila"><span>Registrado</span><span>{ticket.registrado}</span></div>
-                                        <div className="fila"><span>Técnico asignado</span><span>{ticket.tecnico}</span></div>
-                                        <div className="fila"><span>Atención esperada</span><span>{ticket.atencionEsperada}</span></div>
+                                        <div className="fila">
+                                            <span>Categoría</span>
+                                            <span>{obtenerCategoria(ticket.categoriaId)?.nombre}</span>
+                                        </div>
+                                        <div className="fila">
+                                            <span>Subcategoría</span>
+                                            <span>{obtenerSubcategoria(ticket.subcategoriaId)?.nombre}</span>
+                                        </div>
+                                        <div className="fila">
+                                            <span>Ambiente</span>
+                                            <span>{obtenerAmbiente(ticket.ambienteId)?.codigo}</span>
+                                        </div>
+                                        <div className="fila">
+                                            <span>Registrado</span>
+                                            <span>{formatearFechaHora(ticket.fechaRegistro)}</span>
+                                        </div>
+                                        <div className="fila">
+                                            <span>Técnico asignado</span>
+                                            <span>{tecnico ? nombreCorto(tecnico) : "Sin asignar"}</span>
+                                        </div>
+                                        <div className="fila">
+                                            <span>Atención esperada</span>
+                                            <span>Antes de {formatearFechaHora(fechaLimiteAtencion(ticket))}</span>
+                                        </div>
                                     </section>
 
                                     <section className="lineatemp">
                                         <h3>Línea de tiempo</h3>
                                         <ul className="tiempo">
-                                            {ticket.hitos.map((h) => (
+                                            {hitos.map((h) => (
                                                 <li key={h.titulo} className={`hito-${h.tipo}`}>
                                                     <strong>{h.titulo}</strong>
-                                                    <small>{h.detalle}</small>
+                                                    <small>
+                                                        {[h.fecha && formatearFechaHora(h.fecha), h.detalle]
+                                                            .filter(Boolean)
+                                                            .join(" - ")}
+                                                    </small>
                                                 </li>
                                             ))}
                                         </ul>

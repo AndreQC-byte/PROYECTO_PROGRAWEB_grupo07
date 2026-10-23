@@ -1126,6 +1126,56 @@
     cursor: not-allowed;
 }
 
+/* Texto de ayuda del ambiente cuando el código no existe */
+.nuevo-ticket small.error-campo {
+  color: var(--color-danger);
+}
+
+/* Aviso cuando se llega desde "Reabrir ticket" */
+.nuevo-ticket .aviso-reapertura {
+  margin: 16px 0;
+  padding: 12px;
+  background: var(--color-primary-soft);
+  border-left: 3px solid var(--color-primary);
+  border-radius: var(--border-radius);
+  color: var(--color-primary);
+  font-size: var(--text-auxiliar);
+  line-height: var(--lh-auxiliar);
+}
+
+/* Asunto y descripción en la confirmación */
+.confirmacion-ticket .detalle-registrado {
+  margin: 0 0 24px;
+  padding: 16px;
+  text-align: left;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+.confirmacion-ticket .detalle-registrado small {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--text-etiqueta);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.confirmacion-ticket .detalle-registrado p {
+  margin-bottom: 12px;
+}
+.confirmacion-ticket .detalle-registrado p:last-child {
+  margin-bottom: 0;
+}
+
+/* Detalle: ticket cerrado y último paso de la línea de tiempo */
+.detalle-ticket .aviso-cerrado {
+  margin-top: 16px;
+  color: var(--color-text-muted);
+  font-size: var(--text-auxiliar);
+}
+.detalle-ticket .tiempo .hito-cerrado::before {
+  background: var(--color-success);
+}
 
 /* =====================================================================
    RESPONSIVO

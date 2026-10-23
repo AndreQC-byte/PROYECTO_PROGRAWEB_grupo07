@@ -2,19 +2,33 @@ import { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layout/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
+import { useTickets } from "./almacenTickets";
+import { fechaLimiteAtencion } from "./servicioTickets";
+import {
+  obtenerAmbiente,
+  obtenerCategoria,
+  obtenerSubcategoria,
+  formatearHora,
+  formatearFechaCorta,
+} from "../atencion_cierre_tickets/servicioAtencion";
 
 function ConfirmacionTicket() {
   const { state } = useLocation();
+  const { tickets } = useTickets();
   const [copiado, setCopiado] = useState(false);
 
-  // Si entran directo a esta dirección, no hay datos: vuelven al formulario
-  if (!state) return <Navigate to="/mis-tickets/nuevo" replace />;
+  const ticket = tickets.find((t) => t.id === state?.ticketId);
+
+  // Si entran directo a esta dirección, no hay ticket: vuelven al formulario
+  if (!ticket) return <Navigate to="/mis-tickets/nuevo" replace />;
+
+  const limite = fechaLimiteAtencion(ticket);
 
   function copiarCodigo() {
-    navigator.clipboard.writeText(state.codigo);
+    navigator.clipboard.writeText(ticket.id);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2000);
   }
@@ -34,7 +48,7 @@ function ConfirmacionTicket() {
             </p>
 
             <div className="codigo">
-              <span id="numero">{state.codigo}</span>
+              <span id="numero">{ticket.id}</span>
               <button type="button" id="copiar" onClick={copiarCodigo}>
                 {copiado ? "Copiado" : "Copiar"}
               </button>
@@ -43,25 +57,34 @@ function ConfirmacionTicket() {
             <div className="datos">
               <div className="asig">
                 <small>Prioridad asignada</small>
-                <EtiquetaPrioridad prioridad={state.prioridad} />
-                <EtiquetaEstado estado="Abierto" />
+                <EtiquetaPrioridad prioridad={ticket.prioridad} />
+                <EtiquetaEstado estado={ticket.estado} />
               </div>
               <div className="horario">
                 <small>Tiempo de atención esperado</small>
-                {/* Texto fijo por ahora: el cálculo real se hace después */}
-                <p>2 horas hábiles - antes de las 10:12 del 07/09/2026</p>
+                <p>
+                  {ticket.tiempoEsperadoHoras} horas hábiles - antes de las {formatearHora(limite)} del{" "}
+                  {formatearFechaCorta(limite)}
+                </p>
               </div>
               <div className="amb">
                 <small>Ambiente</small>
                 <p id="place">
-                  {state.ambiente} - {state.categoria}
+                  {obtenerAmbiente(ticket.ambienteId)?.codigo} - {obtenerCategoria(ticket.categoriaId)?.nombre}
                 </p>
+                <p>{obtenerSubcategoria(ticket.subcategoriaId)?.nombre}</p>
               </div>
             </div>
 
+            <div className="detalle-registrado">
+              <small>Asunto</small>
+              <p>{ticket.asunto}</p>
+              <small>Descripción</small>
+              <p>{ticket.descripcion}</p>
+            </div>
+
             <div className="botoncitos">
-              {/* TEMPORAL: cuando exista el detalle del ticket, cambiar esta ruta */}
-              <Link to="/mis-tickets" className="btn-primario">
+              <Link to={`/mis-tickets/${ticket.id}`} className="btn-primario">
                 Ver el detalle del ticket
               </Link>
               <Link to="/mis-tickets" className="btn-secundario">

@@ -1,6 +1,14 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { useTickets } from '../../features/registro_seguimiento_tickets/almacenTickets';
+import { contarTickets } from '../../features/registro_seguimiento_tickets/servicioTickets';
+
+const ConteoMisTickets = ({ usuarioId }) => {
+  const { tickets } = useTickets();
+  const { total } = contarTickets(tickets, usuarioId);
+  return <span className="nav-badge-conteo">{total}</span>;
+};
 
 const NavegacionSidebar = () => {
   const { usuario, cerrarSesion } = useAuth();
@@ -131,7 +139,7 @@ const NavegacionSidebar = () => {
               <li>
                 <NavLink to="/mis-tickets" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
                   <span>Mis tickets</span>
-                  <span className="nav-badge-conteo">12</span>
+                  <ConteoMisTickets usuarioId={usuario.id} />
                 </NavLink>
               </li>
               <li>
