@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layout/NavegacionSidebar";
 
 function SinTickets() {
     return (
@@ -29,9 +29,6 @@ function SinTickets() {
                         </Link>
                     </div>
 
-                    <div className="notificacion-error" role="alert">
-                        Notificación de error · «No pudimos registrar el ticket. Revisa tu conexión e inténtalo otra vez.»
-                    </div>
                 </main>
             </div>
             <footer className="mis-tickets-pie">

@@ -1,78 +1,152 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layout/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
 import SinTickets from "./SinTickets";
+import { useAuth } from "../../context/AuthContext";
+import { useTickets } from "./almacenTickets";
+import {
+    ESTADOS,
+    PRIORIDADES,
+    contarTickets,
+    filtrarTickets,
+    formatearDia,
+    obtenerCategoriasActivas,
+    ticketsDeUsuario,
+} from "./servicioTickets";
+import {
+    obtenerAmbiente,
+    obtenerCategoria,
+    obtenerSubcategoria,
+} from "../atencion_cierre_tickets/servicioAtencion";
 
 const POR_PAGINA = 8;
-const DESDE = "2026-08-01";
-const HASTA = "2026-09-07";
-const ESTADOS_TERMINADOS = ["Resuelto", "Cerrado"];
+const MAX_SUGERENCIAS = 8;
 
-const categorias = [
-    "Audiovisuales",
-    "Redes y conectividad",
-    "Climatización",
-    "Eléctrico",
-    "Accesos y cerraduras",
-    "Mobiliario",
-    "Limpieza",
-];
+// Quita tildes y mayúsculas para comparar: "Climatización" == "climatizacion"
+const normalizar = (s) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
-// Tickets de PRUEBA (los últimos 4 son de ejemplo para que funcione la página 2)
-const tickets = [
-    { codigo: "TCK-2026-00147", asunto: "Proyector no enciende en aula", categoria: "Audiovisuales", subcategoria: "Proyector no enciende", ambiente: "A-201", fecha: "2026-09-07", prioridad: "Crítica", estado: "Abierto" },
-    { codigo: "TCK-2026-00146", asunto: "Punto de red caído en laboratorio", categoria: "Redes y conectividad", subcategoria: "Punto de red caído", ambiente: "H-210", fecha: "2026-09-07", prioridad: "Crítica", estado: "Abierto" },
-    { codigo: "TCK-2026-00145", asunto: "Aire acondicionado sin frío", categoria: "Climatización", subcategoria: "Aire sin frío", ambiente: "E-304", fecha: "2026-09-07", prioridad: "Alta", estado: "En atención" },
-    { codigo: "TCK-2026-00144", asunto: "Tomacorriente sin energía", categoria: "Eléctrico", subcategoria: "Tomacorriente sin energía", ambiente: "N-402", fecha: "2026-09-07", prioridad: "Alta", estado: "Abierto" },
-    { codigo: "TCK-2026-00143", asunto: "Imagen distorsionada del proyector", categoria: "Audiovisuales", subcategoria: "Imagen distorsionada", ambiente: "Q-101", fecha: "2026-09-07", prioridad: "Media", estado: "En atención" },
-    { codigo: "TCK-2026-00142", asunto: "Chapa de puerta trabada", categoria: "Accesos y cerraduras", subcategoria: "Chapa trabada", ambiente: "H-105", fecha: "2026-09-07", prioridad: "Alta", estado: "En atención" },
-    { codigo: "TCK-2026-00141", asunto: "Cinco sillas rotas en aula", categoria: "Mobiliario", subcategoria: "Silla rota", ambiente: "A-201", fecha: "2026-09-07", prioridad: "Media", estado: "En espera" },
-    { codigo: "TCK-2026-00140", asunto: "Fuga de agua en baño de damas", categoria: "Limpieza", subcategoria: "Fuga de agua", ambiente: "Biblioteca piso 2", fecha: "2026-09-07", prioridad: "Crítica", estado: "En atención" },
-    { codigo: "TCK-2026-00139", asunto: "Pizarra con rayones permanentes", categoria: "Mobiliario", subcategoria: "Pizarra dañada", ambiente: "B-102", fecha: "2026-08-20", prioridad: "Baja", estado: "Resuelto" },
-    { codigo: "TCK-2026-00138", asunto: "Cable HDMI roto en aula", categoria: "Audiovisuales", subcategoria: "Cable roto", ambiente: "C-201", fecha: "2026-08-12", prioridad: "Media", estado: "Cerrado" },
-    { codigo: "TCK-2026-00137", asunto: "Aula sin limpiar tras evento", categoria: "Limpieza", subcategoria: "Aula sucia", ambiente: "D-305", fecha: "2026-08-05", prioridad: "Baja", estado: "Resuelto" },
-    { codigo: "TCK-2026-00136", asunto: "Wi-Fi lento en cafetería", categoria: "Redes y conectividad", subcategoria: "Wi-Fi lento", ambiente: "Cafetería", fecha: "2026-07-28", prioridad: "Media", estado: "Cerrado" },
-];
-
-// "2026-09-07" -> "07/09/2026"
-const formatearFecha = (iso) => iso.split("-").reverse().join("/");
+// "01/09/2026" -> "2026-09-01" (o null si no es una fecha válida)
+const leerFecha = (texto) => {
+    const m = texto.trim().match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+    if (!m) return null;
+    const [, d, mes, a] = m;
+    const iso = `${a}-${mes.padStart(2, "0")}-${d.padStart(2, "0")}`;
+    return Number.isNaN(new Date(iso).getTime()) ? null : iso;
+};
 
 function MisTickets() {
-    const [busqueda, setBusqueda] = useState("");
-    const [filtroEstado, setFiltroEstado] = useState(true);
-    const [filtroFechas, setFiltroFechas] = useState(true);
-    const [categoria, setCategoria] = useState("todas");
+    const { usuario } = useAuth();
+    const { tickets } = useTickets();
+
+    const [texto, setTexto] = useState("");
+    const [abierto, setAbierto] = useState(false);
+    const [activo, setActivo] = useState(0);
+    // Filtros ya aplicados: [{ campo, valor, etiqueta }] (uno por campo)
+    const [filtros, setFiltros] = useState([]);
     const [pagina, setPagina] = useState(1);
 
-    if (tickets.length === 0) return <SinTickets />;
+    const mios = useMemo(() => ticketsDeUsuario(tickets, usuario?.id), [tickets, usuario?.id]);
 
-    const enCurso = tickets.filter((t) => !ESTADOS_TERMINADOS.includes(t.estado)).length;
+    // Todo lo que se puede filtrar y escribir a mano
+    const opciones = useMemo(
+        () => [
+            { campo: "estado", valor: "en curso", etiqueta: "Estado: en curso" },
+            ...ESTADOS.map((e) => ({ campo: "estado", valor: e, etiqueta: `Estado: ${e}` })),
+            ...obtenerCategoriasActivas().map((c) => ({
+                campo: "categoriaId",
+                valor: c.id,
+                etiqueta: `Categoría: ${c.nombre}`,
+            })),
+            ...PRIORIDADES.map((p) => ({ campo: "prioridad", valor: p, etiqueta: `Prioridad: ${p}` })),
+        ],
+        []
+    );
 
-    const ticketsFiltrados = tickets.filter((t) => {
-        const texto = busqueda.trim().toLowerCase();
-        if (texto && !t.codigo.toLowerCase().includes(texto)) return false;
-        if (filtroEstado && ESTADOS_TERMINADOS.includes(t.estado)) return false;
-        if (filtroFechas && (t.fecha < DESDE || t.fecha > HASTA)) return false;
-        if (categoria !== "todas" && t.categoria !== categoria) return false;
-        return true;
+    // Sugerencias según lo que se va escribiendo ("Esta" -> todos los estados)
+    const sugerencias = useMemo(() => {
+        const t = normalizar(texto);
+        if (!t) return [];
+
+        const lista = opciones.filter((o) => normalizar(o.etiqueta).includes(t));
+
+        const fecha = leerFecha(texto);
+        if (fecha) {
+            lista.unshift(
+                { campo: "desde", valor: fecha, etiqueta: `Desde: ${formatearDia(fecha)}` },
+                { campo: "hasta", valor: fecha, etiqueta: `Hasta: ${formatearDia(fecha)}` }
+            );
+        }
+
+        if (/^(tck|\d)/.test(t)) {
+            lista.push({ campo: "busqueda", valor: texto.trim(), etiqueta: `Código: ${texto.trim()}` });
+        }
+
+        return lista.slice(0, MAX_SUGERENCIAS);
+    }, [texto, opciones]);
+
+    const ayudaFecha =
+        sugerencias.length === 0 && /^(fecha|desde|hasta)/.test(normalizar(texto));
+
+    // Criterios que entiende filtrarTickets
+    const criterios = { busqueda: "", estado: "todos", categoriaId: "todas", prioridad: "todas", desde: "", hasta: "" };
+    filtros.forEach((f) => {
+        criterios[f.campo] = f.valor;
     });
 
-    const total = ticketsFiltrados.length;
+    const resultado = filtrarTickets(mios, criterios);
+    const { total: registrados, enCurso } = contarTickets(mios, usuario?.id);
+
+    const total = resultado.length;
     const totalPaginas = Math.max(1, Math.ceil(total / POR_PAGINA));
-    const inicio = (pagina - 1) * POR_PAGINA;
-    const visibles = ticketsFiltrados.slice(inicio, inicio + POR_PAGINA);
+    const paginaActual = Math.min(pagina, totalPaginas);
+    const inicio = (paginaActual - 1) * POR_PAGINA;
+    const visibles = resultado.slice(inicio, inicio + POR_PAGINA);
+
+    if (mios.length === 0) return <SinTickets />;
+
+    function agregarFiltro(opcion) {
+        // Un solo filtro por campo: el nuevo reemplaza al anterior
+        setFiltros((prev) => [...prev.filter((f) => f.campo !== opcion.campo), opcion]);
+        setTexto("");
+        setAbierto(false);
+        setActivo(0);
+        setPagina(1);
+    }
+
+    function quitarFiltro(campo) {
+        setFiltros((prev) => prev.filter((f) => f.campo !== campo));
+        setPagina(1);
+    }
 
     function limpiarFiltros(e) {
         e.preventDefault();
-        setBusqueda("");
-        setFiltroEstado(false);
-        setFiltroFechas(false);
-        setCategoria("todas");
+        setFiltros([]);
+        setTexto("");
+        setAbierto(false);
         setPagina(1);
+    }
+
+    function alPresionarTecla(e) {
+        if (e.key === "ArrowDown" && sugerencias.length) {
+            e.preventDefault();
+            setAbierto(true);
+            setActivo((i) => (i + 1) % sugerencias.length);
+        } else if (e.key === "ArrowUp" && sugerencias.length) {
+            e.preventDefault();
+            setActivo((i) => (i - 1 + sugerencias.length) % sugerencias.length);
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (sugerencias.length) agregarFiltro(sugerencias[Math.min(activo, sugerencias.length - 1)]);
+        } else if (e.key === "Escape") {
+            setAbierto(false);
+        } else if (e.key === "Backspace" && !texto && filtros.length) {
+            quitarFiltro(filtros[filtros.length - 1].campo);
+        }
     }
 
     return (
@@ -85,7 +159,7 @@ function MisTickets() {
                         <div>
                             <h1>Mis tickets</h1>
                             <p id="resumen">
-                                {tickets.length} tickets registrados - {enCurso} en curso
+                                {registrados} tickets registrados - {enCurso} en curso
                             </p>
                         </div>
                         <Link to="/mis-tickets/nuevo" className="btn-primario">
@@ -94,65 +168,64 @@ function MisTickets() {
                     </div>
 
                     <div className="filtros">
-                        <input
-                            id="buscar"
-                            type="text"
-                            placeholder="TCK-2026-..."
-                            value={busqueda}
-                            onChange={(e) => {
-                                setBusqueda(e.target.value);
-                                setPagina(1);
-                            }}
-                        />
+                        <div className="buscador">
+                            <input
+                                id="buscar"
+                                type="text"
+                                autoComplete="off"
+                                placeholder="Filtrar: estado, categoría, prioridad, fecha o código..."
+                                role="combobox"
+                                aria-expanded={abierto && sugerencias.length > 0}
+                                aria-controls="lista-sugerencias"
+                                value={texto}
+                                onChange={(e) => {
+                                    setTexto(e.target.value);
+                                    setAbierto(true);
+                                    setActivo(0);
+                                }}
+                                onFocus={() => setAbierto(true)}
+                                onBlur={() => setAbierto(false)}
+                                onKeyDown={alPresionarTecla}
+                            />
 
-                        {filtroEstado && (
-                            <span className="opcion">
-                                Estado: en curso
+                            {abierto && (sugerencias.length > 0 || ayudaFecha) && (
+                                <ul className="sugerencias" id="lista-sugerencias" role="listbox">
+                                    {sugerencias.map((s, i) => (
+                                        <li
+                                            key={`${s.campo}-${s.valor}`}
+                                            role="option"
+                                            aria-selected={i === activo}
+                                            className={i === activo ? "sugerencia activa" : "sugerencia"}
+                                            // mouseDown (y no click) para que el input no pierda el foco antes de elegir
+                                            onMouseDown={(e) => {
+                                                e.preventDefault();
+                                                agregarFiltro(s);
+                                            }}
+                                            onMouseEnter={() => setActivo(i)}
+                                        >
+                                            {s.etiqueta}
+                                        </li>
+                                    ))}
+                                    {ayudaFecha && (
+                                        <li className="sugerencia-ayuda">Escribe la fecha completa, ej. 01/09/2026</li>
+                                    )}
+                                </ul>
+                            )}
+                        </div>
+
+                        {filtros.map((f) => (
+                            <span className="opcion" key={f.campo}>
+                                {f.etiqueta}
                                 <button
                                     type="button"
                                     className="quitar"
-                                    aria-label="Quitar filtro de estado"
-                                    onClick={() => {
-                                        setFiltroEstado(false);
-                                        setPagina(1);
-                                    }}
+                                    aria-label={`Quitar filtro ${f.etiqueta}`}
+                                    onClick={() => quitarFiltro(f.campo)}
                                 >
                                     ×
                                 </button>
                             </span>
-                        )}
-
-                        {filtroFechas && (
-                            <span className="opcion">
-                                {formatearFecha(DESDE)} – {formatearFecha(HASTA)}
-                                <button
-                                    type="button"
-                                    className="quitar"
-                                    aria-label="Quitar filtro de fechas"
-                                    onClick={() => {
-                                        setFiltroFechas(false);
-                                        setPagina(1);
-                                    }}
-                                >
-                                    ×
-                                </button>
-                            </span>
-                        )}
-
-                        <select
-                            value={categoria}
-                            onChange={(e) => {
-                                setCategoria(e.target.value);
-                                setPagina(1);
-                            }}
-                        >
-                            <option value="todas">Categoría: todas</option>
-                            {categorias.map((c) => (
-                                <option key={c} value={c}>
-                                    {c}
-                                </option>
-                            ))}
-                        </select>
+                        ))}
 
                         <a href="#" id="limpiar" onClick={limpiarFiltros}>
                             Limpiar filtros
@@ -181,19 +254,19 @@ function MisTickets() {
                                 )}
 
                                 {visibles.map((t) => (
-                                    <tr key={t.codigo}>
+                                    <tr key={t.id}>
                                         <td>
-                                            {/* TEMPORAL: cuando exista el detalle, cambiar por un Link a esa pantalla */}
-                                            <a href="#" className="codigoticket">
-                                                {t.codigo}
-                                            </a>
+                                            <Link to={`/mis-tickets/${t.id}`} className="codigoticket">
+                                                {t.id}
+                                            </Link>
                                         </td>
                                         <td>{t.asunto}</td>
                                         <td>
-                                            {t.categoria} - {t.subcategoria}
+                                            {obtenerCategoria(t.categoriaId)?.nombre} -{" "}
+                                            {obtenerSubcategoria(t.subcategoriaId)?.nombre}
                                         </td>
-                                        <td className="ambiente">{t.ambiente}</td>
-                                        <td>{formatearFecha(t.fecha)}</td>
+                                        <td className="ambiente">{obtenerAmbiente(t.ambienteId)?.codigo}</td>
+                                        <td>{formatearDia(t.fechaRegistro)}</td>
                                         <td>
                                             <EtiquetaPrioridad prioridad={t.prioridad} />
                                         </td>
@@ -215,8 +288,8 @@ function MisTickets() {
                             <div className="pagina">
                                 <button
                                     type="button"
-                                    disabled={pagina === 1}
-                                    onClick={() => setPagina(pagina - 1)}
+                                    disabled={paginaActual === 1}
+                                    onClick={() => setPagina(paginaActual - 1)}
                                 >
                                     Anterior
                                 </button>
@@ -225,7 +298,7 @@ function MisTickets() {
                                     <button
                                         key={n}
                                         type="button"
-                                        className={n === pagina ? "actual" : undefined}
+                                        className={n === paginaActual ? "actual" : undefined}
                                         onClick={() => setPagina(n)}
                                     >
                                         {n}
@@ -234,8 +307,8 @@ function MisTickets() {
 
                                 <button
                                     type="button"
-                                    disabled={pagina === totalPaginas}
-                                    onClick={() => setPagina(pagina + 1)}
+                                    disabled={paginaActual === totalPaginas}
+                                    onClick={() => setPagina(paginaActual + 1)}
                                 >
                                     Siguiente
                                 </button>

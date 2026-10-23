@@ -2,12 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../styles/registro.css";
 import Boton from "../../components/common/Boton";
 
-const ModalReabrirTicket = ({
-    codigo = "TCK-2026-00131",
-    fechaLimite = "10/09/2026",
-    onCerrar,
-    onConfirmar,
-}) => {
+const ModalReabrirTicket = ({ codigo, fechaLimite, onCerrar, onConfirmar }) => {
     const [motivo, setMotivo] = useState("");
 
     // Cierra el modal con la tecla Esc
@@ -57,13 +52,15 @@ const ModalReabrirTicket = ({
                         id="mr-motivo"
                         rows={3}
                         required
+                        autoFocus
                         value={motivo}
                         onChange={(e) => setMotivo(e.target.value)}
                     />
 
                     <p className="mr-aviso">
-                        El ticket volverá al estado Reabierto y regresará a la cola con su
-                        prioridad original.
+                        Te llevaremos al formulario de registro con la categoría, la subcategoría
+                        y el ambiente de este ticket ya llenos. Solo falta que escribas el asunto
+                        y la descripción.
                     </p>
 
                     <div className="mr-botones">
