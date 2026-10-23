@@ -1,111 +1,78 @@
-import { useRef, useState } from "react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { useReducer, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import {
+    formatearFecha,
+    iniciales,
+    nombreCompleto,
+    nombreCorto,
+    obtenerAmbiente,
+    obtenerCategoria,
+    obtenerHistorialTicket,
+    obtenerSubcategoria,
+    obtenerUsuario,
+} from "../atencion_cierre_tickets/servicioAtencion";
+import { agregarComentarioUsuario, esTerminado, obtenerTicketDelUsuario } from "./servicioTickets";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layouts/NavegacionSideBar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
 
-// Devuelve la fecha y hora actuales con el formato "07/09/2026 08:12"
-function fechaActual() {
-    const d = new Date();
-    const dos = (n) => String(n).padStart(2, "0");
-    return `${dos(d.getDate())}/${dos(d.getMonth() + 1)}/${d.getFullYear()} ${dos(d.getHours())}:${dos(d.getMinutes())}`;
-}
+// Arma lo que muestra la pantalla a partir del ticket guardado y el catálogo
+function construirVista(ticket) {
+    const tecnico = obtenerUsuario(ticket.tecnicoAsignadoId);
+    const limite = new Date(new Date(ticket.fechaRegistro).getTime() + ticket.tiempoEsperadoHoras * 3600 * 1000);
+    const eventos = obtenerHistorialTicket(ticket);
+    const terminado = esTerminado(ticket.estado);
 
-// Usuario de PRUEBA que escribe los comentarios: luego saldrá de la sesión
-const USUARIO_ACTUAL = {
-    nombre: "Camila Quispe Ramos",
-    iniciales: "CQ",
-    rol: "Usuario",
-};
+    // Las notas internas del equipo técnico no se muestran al usuario
+    const bitacora = ticket.bitacora
+        .filter((b) => b.tipo !== "Nota Interna")
+        .map((b) => {
+            const autor = obtenerUsuario(b.autorId);
+            return {
+                iniciales: iniciales(autor),
+                nombre: nombreCompleto(autor),
+                rol: autor?.rol ?? "Usuario",
+                fecha: formatearFecha(b.fecha),
+                texto: b.mensaje,
+            };
+        });
 
-// Tickets de PRUEBA con su detalle (por ahora solo existe uno completo)
-const ticketsDetalle = {
-    "TCK-2026-00147": {
-        codigo: "TCK-2026-00147",
-        asunto: "Proyector no enciende en aula A-201",
-        prioridad: "Crítica",
-        estado: "En atención",
-        categoria: "Audiovisuales",
-        subcategoria: "Proyector no enciende",
-        ambiente: "A-201",
-        registrado: "07/09/2026 08:12",
-        tecnico: "Julio Paredes Soto",
-        atencionEsperada: "Antes de 10:12",
-        bitacora: [
-            {
-                iniciales: "CQ",
-                nombre: "Camila Quispe Ramos",
-                rol: "Usuario",
-                fecha: "07/09/2026 08:12",
-                texto: "El proyector enciende el foco pero la imagen no llega. Ya probé con dos laptops distintas y el mismo cable.",
-            },
-            {
-                iniciales: "LM",
-                nombre: "Lucía Mendoza Ríos",
-                rol: "Supervisor",
-                fecha: "07/09/2026 08:20",
-                texto: "Asignamos tu ticket a Julio Paredes. Se atenderá antes del inicio de la clase de 10:00.",
-            },
-            {
-                iniciales: "JP",
-                nombre: "Julio Paredes Soto",
-                rol: "Técnico",
-                fecha: "07/09/2026 09:05",
-                texto: "Subí al aula con un cable de reemplazo. La imagen vuelve con conexión directa; el problema está en el extensor del rack.",
-            },
-        ],
-        hitos: [
-            { tipo: "abierto", titulo: "Abierto", detalle: "07/09/2026 08:12 - registrado por ti" },
-            { tipo: "asignado", titulo: "Asignado", detalle: "07/09/2026 08:20 - Lucía Mendoza Ríos" },
-            { tipo: "actual", titulo: "En atención", detalle: "07/09/2026 08:41 - Julio Paredes Soto" },
-            { tipo: "pendiente", titulo: "Resuelto", detalle: "Pendiente" },
-        ],
-    },
-};
+    const hitos = eventos.map((e, i) => ({
+        tipo: i === eventos.length - 1 && !terminado ? "actual" : e.estado === "Asignado" ? "asignado" : "abierto",
+        titulo: e.estado,
+        detalle: `${formatearFecha(e.fecha)} - ${
+            e.estado === "Abierto" ? "registrado por ti" : e.autorId ? nombreCompleto(obtenerUsuario(e.autorId)) : "supervisor"
+        }`,
+    }));
+    if (!terminado) hitos.push({ tipo: "pendiente", titulo: "Resuelto", detalle: "Pendiente" });
 
-// Arma el detalle de un ticket recién registrado con los datos del formulario
-function crearTicketNuevo(datos) {
     return {
-        codigo: datos.codigo,
-        asunto: datos.asunto,
-        prioridad: datos.prioridad,
-        estado: "Abierto",
-        categoria: datos.categoria,
-        subcategoria: datos.subcategoria,
-        ambiente: datos.ambiente,
-        registrado: datos.registrado,
-        tecnico: "Sin asignar",
-        atencionEsperada: "2 horas hábiles desde el registro",
-        bitacora: [
-            {
-                iniciales: USUARIO_ACTUAL.iniciales,
-                nombre: USUARIO_ACTUAL.nombre,
-                rol: USUARIO_ACTUAL.rol,
-                fecha: datos.registrado,
-                texto: datos.descripcion,
-            },
-        ],
-        hitos: [
-            { tipo: "abierto", titulo: "Abierto", detalle: `${datos.registrado} - registrado por ti` },
-            { tipo: "pendiente", titulo: "Asignado", detalle: "Pendiente" },
-            { tipo: "pendiente", titulo: "En atención", detalle: "Pendiente" },
-            { tipo: "pendiente", titulo: "Resuelto", detalle: "Pendiente" },
-        ],
+        codigo: ticket.id,
+        asunto: ticket.asunto,
+        prioridad: ticket.prioridad,
+        estado: ticket.estado,
+        categoria: obtenerCategoria(ticket.categoriaId)?.nombre ?? "",
+        subcategoria: obtenerSubcategoria(ticket.subcategoriaId)?.nombre ?? "",
+        ambiente: obtenerAmbiente(ticket.ambienteId)?.codigo ?? "",
+        registrado: formatearFecha(ticket.fechaRegistro),
+        tecnico: tecnico ? nombreCorto(tecnico) : "Sin asignar",
+        atencionEsperada: `Antes del ${formatearFecha(limite.toISOString())}`,
+        bitacora,
+        hitos,
     };
 }
 
 function DetalleTicketUsuario() {
     const { codigo } = useParams();
-    const { state } = useLocation();
+    const { usuario } = useAuth();
+    const [, refrescar] = useReducer((n) => n + 1, 0);
 
-    // Primero busca en los tickets de prueba; si no está, usa los datos del ticket recién registrado
-    const ticket =
-        ticketsDetalle[codigo] ||
-        (state && state.codigo === codigo ? crearTicketNuevo(state) : null);
-
-    const [bitacora, setBitacora] = useState(ticket ? ticket.bitacora : []);
+    const ticketGuardado = obtenerTicketDelUsuario(usuario.id, codigo);
+    const ticket = ticketGuardado ? construirVista(ticketGuardado) : null;
+    const bitacora = ticket ? ticket.bitacora : [];
     const [comentario, setComentario] = useState("");
     const comentarioRef = useRef(null);
 
@@ -120,16 +87,8 @@ function DetalleTicketUsuario() {
         const texto = comentario.trim();
         if (!texto) return;
 
-        setBitacora([
-            ...bitacora,
-            {
-                iniciales: USUARIO_ACTUAL.iniciales,
-                nombre: USUARIO_ACTUAL.nombre,
-                rol: USUARIO_ACTUAL.rol,
-                fecha: fechaActual(),
-                texto,
-            },
-        ]);
+        agregarComentarioUsuario(ticket.codigo, usuario.id, texto);
+        refrescar();
         setComentario("");
     }
 
@@ -228,8 +187,8 @@ function DetalleTicketUsuario() {
                                     <section className="lineatemp">
                                         <h3>Línea de tiempo</h3>
                                         <ul className="tiempo">
-                                            {ticket.hitos.map((h) => (
-                                                <li key={h.titulo} className={`hito-${h.tipo}`}>
+                                            {ticket.hitos.map((h, i) => (
+                                                <li key={i} className={`hito-${h.tipo}`}>
                                                     <strong>{h.titulo}</strong>
                                                     <small>{h.detalle}</small>
                                                 </li>

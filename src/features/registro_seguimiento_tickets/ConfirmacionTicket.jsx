@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layouts/NavegacionSideBar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
+import { formatearFecha } from "../atencion_cierre_tickets/servicioAtencion";
 
 function ConfirmacionTicket() {
   const { state } = useLocation();
@@ -12,6 +13,8 @@ function ConfirmacionTicket() {
 
   // Si entran directo a esta dirección, no hay datos: vuelven al formulario
   if (!state) return <Navigate to="/mis-tickets/nuevo" replace />;
+
+  const limite = new Date(new Date(state.fechaRegistro).getTime() + state.tiempoEsperadoHoras * 3600 * 1000);
 
   function copiarCodigo() {
     navigator.clipboard.writeText(state.codigo);
@@ -48,8 +51,9 @@ function ConfirmacionTicket() {
               </div>
               <div className="horario">
                 <small>Tiempo de atención esperado</small>
-                {/* Texto fijo por ahora: el cálculo real se hace después */}
-                <p>2 horas hábiles - antes de las 10:12 del 07/09/2026</p>
+                <p>
+                  {state.tiempoEsperadoHoras} horas - antes del {formatearFecha(limite.toISOString())}
+                </p>
               </div>
               <div className="amb">
                 <small>Ambiente</small>
@@ -60,8 +64,7 @@ function ConfirmacionTicket() {
             </div>
 
             <div className="botoncitos">
-              {/* TEMPORAL: cuando exista el detalle del ticket, cambiar esta ruta */}
-              <Link to="/mis-tickets" className="btn-primario">
+              <Link to={`/mis-tickets/${state.codigo}`} className="btn-primario">
                 Ver el detalle del ticket
               </Link>
               <Link to="/mis-tickets" className="btn-secundario">

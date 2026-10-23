@@ -66,6 +66,33 @@ export const construirHistorialInicial = (ticket) => {
   return eventos;
 };
 
+// Los historiales se guardan en localStorage para que sobrevivan a una recarga
+const CLAVE_HISTORIALES = 'mesaAyuda.atencion.historiales';
+
+export const leerHistorialesGuardados = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CLAVE_HISTORIALES)) || {};
+  } catch {
+    return {};
+  }
+};
+
+export const guardarHistoriales = (historiales) => {
+  try {
+    localStorage.setItem(CLAVE_HISTORIALES, JSON.stringify(historiales));
+  } catch (err) {
+    console.error('Error al guardar historiales:', err);
+  }
+};
+
+// Usa el historial guardado solo si sigue coherente con el estado actual del ticket
+// (otro módulo, como la cola, pudo cambiarlo); si no, lo reconstruye.
+export const obtenerHistorialTicket = (ticket, guardados = leerHistorialesGuardados()) => {
+  const eventos = guardados[ticket.id];
+  const ultimo = eventos?.[eventos.length - 1];
+  return ultimo && ultimo.estado === ticket.estado ? eventos : construirHistorialInicial(ticket);
+};
+
 // ---------- Cálculo de tiempos ----------
 
 const minutosEntre = (desde, hasta) => Math.max(0, Math.round((new Date(hasta) - new Date(desde)) / MS_MINUTO));

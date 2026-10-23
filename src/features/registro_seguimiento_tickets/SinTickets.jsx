@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layouts/NavegacionSideBar";
 
 function SinTickets() {
     return (

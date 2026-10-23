@@ -1,47 +1,48 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { obtenerCategorias, obtenerSubcategorias, obtenerAmbientes } from "../catalogo/servicioCatalogo";
+import { esTerminado, obtenerTicketsDelUsuario } from "./servicioTickets";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layouts/NavegacionSideBar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
 import SinTickets from "./SinTickets";
 
 const POR_PAGINA = 8;
-const DESDE = "2026-08-01";
-const HASTA = "2026-09-07";
-const ESTADOS_TERMINADOS = ["Resuelto", "Cerrado"];
-
-const categorias = [
-    "Audiovisuales",
-    "Redes y conectividad",
-    "Climatización",
-    "Eléctrico",
-    "Accesos y cerraduras",
-    "Mobiliario",
-    "Limpieza",
-];
-
-// Tickets de PRUEBA (los últimos 4 son de ejemplo para que funcione la página 2)
-const tickets = [
-    { codigo: "TCK-2026-00147", asunto: "Proyector no enciende en aula", categoria: "Audiovisuales", subcategoria: "Proyector no enciende", ambiente: "A-201", fecha: "2026-09-07", prioridad: "Crítica", estado: "Abierto" },
-    { codigo: "TCK-2026-00146", asunto: "Punto de red caído en laboratorio", categoria: "Redes y conectividad", subcategoria: "Punto de red caído", ambiente: "H-210", fecha: "2026-09-07", prioridad: "Crítica", estado: "Abierto" },
-    { codigo: "TCK-2026-00145", asunto: "Aire acondicionado sin frío", categoria: "Climatización", subcategoria: "Aire sin frío", ambiente: "E-304", fecha: "2026-09-07", prioridad: "Alta", estado: "En atención" },
-    { codigo: "TCK-2026-00144", asunto: "Tomacorriente sin energía", categoria: "Eléctrico", subcategoria: "Tomacorriente sin energía", ambiente: "N-402", fecha: "2026-09-07", prioridad: "Alta", estado: "Abierto" },
-    { codigo: "TCK-2026-00143", asunto: "Imagen distorsionada del proyector", categoria: "Audiovisuales", subcategoria: "Imagen distorsionada", ambiente: "Q-101", fecha: "2026-09-07", prioridad: "Media", estado: "En atención" },
-    { codigo: "TCK-2026-00142", asunto: "Chapa de puerta trabada", categoria: "Accesos y cerraduras", subcategoria: "Chapa trabada", ambiente: "H-105", fecha: "2026-09-07", prioridad: "Alta", estado: "En atención" },
-    { codigo: "TCK-2026-00141", asunto: "Cinco sillas rotas en aula", categoria: "Mobiliario", subcategoria: "Silla rota", ambiente: "A-201", fecha: "2026-09-07", prioridad: "Media", estado: "En espera" },
-    { codigo: "TCK-2026-00140", asunto: "Fuga de agua en baño de damas", categoria: "Limpieza", subcategoria: "Fuga de agua", ambiente: "Biblioteca piso 2", fecha: "2026-09-07", prioridad: "Crítica", estado: "En atención" },
-    { codigo: "TCK-2026-00139", asunto: "Pizarra con rayones permanentes", categoria: "Mobiliario", subcategoria: "Pizarra dañada", ambiente: "B-102", fecha: "2026-08-20", prioridad: "Baja", estado: "Resuelto" },
-    { codigo: "TCK-2026-00138", asunto: "Cable HDMI roto en aula", categoria: "Audiovisuales", subcategoria: "Cable roto", ambiente: "C-201", fecha: "2026-08-12", prioridad: "Media", estado: "Cerrado" },
-    { codigo: "TCK-2026-00137", asunto: "Aula sin limpiar tras evento", categoria: "Limpieza", subcategoria: "Aula sucia", ambiente: "D-305", fecha: "2026-08-05", prioridad: "Baja", estado: "Resuelto" },
-    { codigo: "TCK-2026-00136", asunto: "Wi-Fi lento en cafetería", categoria: "Redes y conectividad", subcategoria: "Wi-Fi lento", ambiente: "Cafetería", fecha: "2026-07-28", prioridad: "Media", estado: "Cerrado" },
-];
+const HOY = new Date().toISOString().slice(0, 10);
 
 // "2026-09-07" -> "07/09/2026"
 const formatearFecha = (iso) => iso.split("-").reverse().join("/");
 
+// Arma las filas de la tabla a partir de los tickets guardados, resolviendo nombres del catálogo
+function construirFilas(usuarioId) {
+    const categorias = obtenerCategorias();
+    const subcategorias = obtenerSubcategorias();
+    const ambientes = obtenerAmbientes();
+    return obtenerTicketsDelUsuario(usuarioId).map((t) => ({
+        codigo: t.id,
+        asunto: t.asunto,
+        categoria: categorias.find((c) => c.id === t.categoriaId)?.nombre ?? "",
+        subcategoria: subcategorias.find((s) => s.id === t.subcategoriaId)?.nombre ?? "",
+        ambiente: ambientes.find((a) => a.id === t.ambienteId)?.codigo ?? "",
+        fecha: t.fechaRegistro.slice(0, 10),
+        prioridad: t.prioridad,
+        estado: t.estado,
+    }));
+}
+
 function MisTickets() {
+    const { usuario } = useAuth();
+    const tickets = construirFilas(usuario.id);
+    const nombresCategorias = obtenerCategorias().map((c) => c.nombre);
+
+    // Rango de fechas por defecto: desde el ticket más antiguo hasta hoy (o el más reciente)
+    const fechas = tickets.map((t) => t.fecha).sort();
+    const DESDE = fechas[0];
+    const HASTA = fechas.length && fechas[fechas.length - 1] > HOY ? fechas[fechas.length - 1] : HOY;
+
     const [busqueda, setBusqueda] = useState("");
     const [filtroEstado, setFiltroEstado] = useState(true);
     const [filtroFechas, setFiltroFechas] = useState(true);
@@ -50,12 +51,12 @@ function MisTickets() {
 
     if (tickets.length === 0) return <SinTickets />;
 
-    const enCurso = tickets.filter((t) => !ESTADOS_TERMINADOS.includes(t.estado)).length;
+    const enCurso = tickets.filter((t) => !esTerminado(t.estado)).length;
 
     const ticketsFiltrados = tickets.filter((t) => {
         const texto = busqueda.trim().toLowerCase();
         if (texto && !t.codigo.toLowerCase().includes(texto)) return false;
-        if (filtroEstado && ESTADOS_TERMINADOS.includes(t.estado)) return false;
+        if (filtroEstado && esTerminado(t.estado)) return false;
         if (filtroFechas && (t.fecha < DESDE || t.fecha > HASTA)) return false;
         if (categoria !== "todas" && t.categoria !== categoria) return false;
         return true;
@@ -147,7 +148,7 @@ function MisTickets() {
                             }}
                         >
                             <option value="todas">Categoría: todas</option>
-                            {categorias.map((c) => (
+                            {nombresCategorias.map((c) => (
                                 <option key={c} value={c}>
                                     {c}
                                 </option>
@@ -183,10 +184,9 @@ function MisTickets() {
                                 {visibles.map((t) => (
                                     <tr key={t.codigo}>
                                         <td>
-                                            {/* TEMPORAL: cuando exista el detalle, cambiar por un Link a esa pantalla */}
-                                            <a href="#" className="codigoticket">
+                                            <Link to={`/mis-tickets/${t.codigo}`} className="codigoticket">
                                                 {t.codigo}
-                                            </a>
+                                            </Link>
                                         </td>
                                         <td>{t.asunto}</td>
                                         <td>

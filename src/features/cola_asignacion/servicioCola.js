@@ -28,6 +28,13 @@ export const obtenerTickets = () => [...ticketsMemoria];
 
 export const obtenerTicketPorId = (id) => ticketsMemoria.find((t) => t.id === id);
 
+// Reemplaza la lista completa y la persiste. La usan HU-3 (registro) y HU-5 (atención)
+// para que todos los módulos compartan el mismo almacén de tickets.
+export const reemplazarTickets = (tickets) => {
+  ticketsMemoria = tickets;
+  guardarTickets(ticketsMemoria);
+};
+
 export const obtenerTecnicos = () => {
   // Combinar usuarios técnicos de db y localStorage si existen
   return (db.usuarios || []).filter((u) => u.rol === 'Técnico');

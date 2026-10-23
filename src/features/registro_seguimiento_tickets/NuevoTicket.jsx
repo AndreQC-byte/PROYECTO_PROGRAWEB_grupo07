@@ -1,28 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/registro.css";
 import Encabezado from "../../components/layouts/Encabezado";
-import NavegacionSidebar from "../../components/layouts/NavegacionSidebar";
+import NavegacionSidebar from "../../components/layouts/NavegacionSideBar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
-
-const subcategoriasPorCategoria = {
-    "Audiovisuales": ["Proyector no enciende", "Imagen distorsionada"],
-    "Redes y conectividad": ["Sin internet", "Wi-Fi lento"],
-    "Climatización": ["Aire no enfría", "Aire con ruido"],
-    "Eléctrico": ["Sin energía", "Tomacorriente dañado"],
-    "Accesos y cerraduras": ["Cerradura trabada", "Tarjeta no abre"],
-    "Mobiliario": ["Silla dañada", "Mesa dañada"],
-    "Limpieza": ["Aula sucia", "Residuos acumulados"],
-};
-
-const categorias = Object.keys(subcategoriasPorCategoria);
-
-// Tickets de PRUEBA
-const ticketsExistentes = [
-    { codigo: "TCK-2026-00147", categoria: "Audiovisuales", ambiente: "A-201", estado: "Abierto" },
-    { codigo: "TCK-2026-00152", categoria: "Climatización", ambiente: "B-105", estado: "En atención" },
-    { codigo: "TCK-2026-00098", categoria: "Mobiliario", ambiente: "A-201", estado: "Cerrado" },
-];
+import {
+    buscarAmbientePorCodigo,
+    buscarTicketDuplicado,
+    obtenerCategoriasActivas,
+    obtenerSubcategoriasActivas,
+    registrarTicket,
+} from "./servicioTickets";
 
 const recomendaciones = [
     "El código del ambiente tal como aparece en la puerta.",
@@ -34,49 +23,56 @@ const recomendaciones = [
 
 function NuevoTicket() {
     const navigate = useNavigate();
-    const [categoria, setCategoria] = useState(categorias[0]);
-    const [subcategoria, setSubcategoria] = useState(
-        subcategoriasPorCategoria[categorias[0]][0]
-    );
+    const { usuario } = useAuth();
+    const categorias = obtenerCategoriasActivas();
+    const [categoriaId, setCategoriaId] = useState(categorias[0]?.id);
+    const subcategorias = obtenerSubcategoriasActivas(categoriaId);
+    const [subcategoriaId, setSubcategoriaId] = useState(subcategorias[0]?.id);
     const [ambiente, setAmbiente] = useState("");
     const [asunto, setAsunto] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [duplicado, setDuplicado] = useState(null); // null o el ticket repetido
 
+    const categoria = categorias.find((c) => c.id === categoriaId);
+    const subcategoria = subcategorias.find((s) => s.id === subcategoriaId);
+    const ambienteEncontrado = buscarAmbientePorCodigo(ambiente);
+    const prioridad = subcategoria?.prioridadDefecto || "Media";
+    const horasEsperadas = subcategoria?.tiempoEsperadoHoras;
+
     function cambiarCategoria(e) {
         const nueva = e.target.value;
-        setCategoria(nueva);
-        setSubcategoria(subcategoriasPorCategoria[nueva][0]);
+        setCategoriaId(nueva);
+        setSubcategoriaId(obtenerSubcategoriasActivas(nueva)[0]?.id);
     }
 
     function registrar(e) {
         e.preventDefault();
+        if (!ambienteEncontrado || !subcategoria) return;
 
-        const repetido = ticketsExistentes.find(
-            (t) =>
-                t.categoria === categoria &&
-                t.ambiente.toLowerCase() === ambiente.trim().toLowerCase() &&
-                t.estado !== "Cerrado"
-        );
-
+        const repetido = buscarTicketDuplicado(categoriaId, ambienteEncontrado.id);
         if (repetido) {
             setDuplicado(repetido);
             return;
         }
 
-        // Código de prueba: el real lo asignará el sistema
-        const ultimo = Math.max(
-            ...ticketsExistentes.map((t) => Number(t.codigo.slice(-5)))
-        );
-        const codigo = `TCK-2026-${String(ultimo + 1).padStart(5, "0")}`;
+        const ticket = registrarTicket({
+            usuarioId: usuario.id,
+            categoriaId,
+            subcategoriaId,
+            ambienteId: ambienteEncontrado.id,
+            asunto,
+            descripcion,
+        });
 
         navigate("/mis-tickets/nuevo/registrado", {
             state: {
-                codigo,
-                categoria,
-                subcategoria,
-                ambiente: ambiente.trim(),
-                prioridad: "Crítica",
+                codigo: ticket.id,
+                categoria: categoria.nombre,
+                subcategoria: subcategoria.nombre,
+                ambiente: ambienteEncontrado.codigo,
+                prioridad: ticket.prioridad,
+                tiempoEsperadoHoras: ticket.tiempoEsperadoHoras,
+                fechaRegistro: ticket.fechaRegistro,
             },
         });
     }
@@ -96,10 +92,12 @@ function NuevoTicket() {
                     {duplicado && (
                         <div id="alerta">
                             <p>
-                                Ya existe un ticket abierto para {ambiente.trim()} en {categoria}:{" "}
-                                {duplicado.codigo}. Revísalo antes de crear otro.
+                                Ya existe un ticket abierto para {ambiente.trim()} en {categoria?.nombre}:{" "}
+                                {duplicado.id}. Revísalo antes de crear otro.
                             </p>
-                            <a href="#">Ver ese ticket</a>
+                            {duplicado.usuarioId === usuario.id && (
+                                <Link to={`/mis-tickets/${duplicado.id}`}>Ver ese ticket</Link>
+                            )}
                         </div>
                     )}
 
@@ -108,9 +106,9 @@ function NuevoTicket() {
                             <div id="primerafila">
                                 <div id="catego">
                                     <label htmlFor="categoria">Categoría</label>
-                                    <select id="categoria" value={categoria} onChange={cambiarCategoria}>
+                                    <select id="categoria" value={categoriaId} onChange={cambiarCategoria}>
                                         {categorias.map((c) => (
-                                            <option key={c}>{c}</option>
+                                            <option key={c.id} value={c.id}>{c.nombre}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -118,11 +116,11 @@ function NuevoTicket() {
                                     <label htmlFor="subcategoria">Subcategoría</label>
                                     <select
                                         id="subcategoria"
-                                        value={subcategoria}
-                                        onChange={(e) => setSubcategoria(e.target.value)}
+                                        value={subcategoriaId}
+                                        onChange={(e) => setSubcategoriaId(e.target.value)}
                                     >
-                                        {subcategoriasPorCategoria[categoria].map((s) => (
-                                            <option key={s}>{s}</option>
+                                        {subcategorias.map((s) => (
+                                            <option key={s.id} value={s.id}>{s.nombre}</option>
                                         ))}
                                     </select>
                                     <small>Depende de la categoría elegida.</small>
@@ -138,17 +136,26 @@ function NuevoTicket() {
                                             type="text"
                                             placeholder="Ej. A-201"
                                             value={ambiente}
-                                            onChange={(e) => setAmbiente(e.target.value)}
+                                            onChange={(e) => {
+                                                setAmbiente(e.target.value);
+                                                setDuplicado(null);
+                                            }}
                                             required
                                         />
                                         <button type="button">Buscar</button>
                                     </div>
-                                    <small>Aula - Pabellón A - piso 2</small>
+                                    <small>
+                                        {ambienteEncontrado
+                                            ? `${ambienteEncontrado.tipo} - Pabellón ${ambienteEncontrado.pabellon} - piso ${ambienteEncontrado.piso}`
+                                            : ambiente.trim()
+                                              ? "No existe un ambiente con ese código."
+                                              : "Escribe el código del ambiente."}
+                                    </small>
                                 </div>
                                 <div className="prio">
                                     <label>Prioridad sugerida</label>
                                     <div className="prioridad">
-                                        <EtiquetaPrioridad prioridad="Crítica" />
+                                        <EtiquetaPrioridad prioridad={prioridad} />
                                         <span>Sugerida por la subcategoría</span>
                                     </div>
                                 </div>
@@ -210,8 +217,8 @@ function NuevoTicket() {
                             <div className="aviso">
                                 <p>Tiempo esperado para esta categoría</p>
                                 <p>
-                                    Prioridad crítica: atención dentro de 2 horas hábiles desde el
-                                    registro.
+                                    Prioridad {prioridad.toLowerCase()}: atención dentro de {horasEsperadas} horas
+                                    desde el registro.
                                 </p>
                             </div>
                         </div>
