@@ -49,6 +49,8 @@ function NuevoTicket() {
     const [descripcion, setDescripcion] = useState("");
     const [duplicado, setDuplicado] = useState(null); // null o el ticket repetido
     const [errorRegistro, setErrorRegistro] = useState(false);
+    const [evidencia, setEvidencia] = useState(null); // { nombre, tamano, url }
+    const [errorEvidencia, setErrorEvidencia] = useState("");
 
     const subcategorias = obtenerSubcategoriasDe(categoriaId);
     const subcategoria = subcategorias.find((s) => s.id === subcategoriaId);
@@ -65,6 +67,31 @@ function NuevoTicket() {
     function cambiarAmbiente(e) {
         setAmbiente(e.target.value);
         setDuplicado(null);
+    }
+
+    function elegirEvidencia(e) {
+        const archivo = e.target.files[0];
+        e.target.value = ""; // permite volver a elegir el mismo archivo después de quitarlo
+        if (!archivo) return;
+
+        if (!["image/jpeg", "image/png"].includes(archivo.type)) {
+            setErrorEvidencia("Solo se admiten imágenes JPG o PNG.");
+            return;
+        }
+        if (archivo.size > 5 * 1024 * 1024) {
+            setErrorEvidencia("La imagen supera los 5 MB.");
+            return;
+        }
+
+        if (evidencia) URL.revokeObjectURL(evidencia.url);
+        setErrorEvidencia("");
+        setEvidencia({ nombre: archivo.name, tamano: archivo.size, url: URL.createObjectURL(archivo) });
+    }
+
+    function quitarEvidencia() {
+        URL.revokeObjectURL(evidencia.url);
+        setEvidencia(null);
+        setErrorEvidencia("");
     }
 
     function registrar(e) {
@@ -88,9 +115,10 @@ function NuevoTicket() {
                 ambienteId: ambienteEncontrado.id,
                 asunto: asunto.trim(),
                 descripcion: descripcion.trim(),
+                evidencia: evidencia ? { nombre: evidencia.nombre, url: evidencia.url } : null,
                 origen: reabrir ? { ticketId: reabrir.ticketId, motivo: reabrir.motivo } : null,
             });
-            navigate("/mis-tickets/nuevo/registrado", { state: { ticketId: nuevo.id } });
+            navigate("/nuevo-ticket/registrado", { state: { ticketId: nuevo.id } });
         } catch (error) {
             console.error(error);
             setErrorRegistro(true);
@@ -225,10 +253,22 @@ function NuevoTicket() {
 
                             <div className="evi">
                                 <label>Evidencia (opcional)</label>
-                                <div className="archivo">
-                                    Arrastra una foto o pulsa para elegir - JPG o PNG hasta 5 MB
-                                    <input id="evidencia" type="file" accept=".jpg,.jpeg,.png" />
-                                </div>
+                                {evidencia ? (
+                                    <div className="evidencia-cargada">
+                                        <img src={evidencia.url} alt="Vista previa de la evidencia" />
+                                        <div>
+                                            <strong>{evidencia.nombre}</strong>
+                                            <small>{Math.round(evidencia.tamano / 1024)} KB</small>
+                                        </div>
+                                        <button type="button" onClick={quitarEvidencia}>Quitar</button>
+                                    </div>
+                                ) : (
+                                    <div className="archivo">
+                                        Arrastra una foto o pulsa para elegir - JPG o PNG hasta 5 MB
+                                        <input id="evidencia" type="file" accept=".jpg,.jpeg,.png" onChange={elegirEvidencia} />
+                                    </div>
+                                )}
+                                {errorEvidencia && <small className="error-campo">{errorEvidencia}</small>}
                             </div>
 
                             <div className="botoncitos">

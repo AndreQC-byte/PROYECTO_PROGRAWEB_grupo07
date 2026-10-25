@@ -6,6 +6,7 @@ import NavegacionSidebar from "../../components/layout/NavegacionSidebar";
 import EtiquetaPrioridad from "../../components/common/EtiquetaPrioridad";
 import EtiquetaEstado from "../../components/common/EtiquetaEstado";
 import TicketCerradoEncuesta from "./TicketCerradoEncuesta";
+import ModalCancelarTicket from "./ModalCancelarTicket";
 import { useAuth } from "../../context/AuthContext";
 import { useTickets } from "./almacenTickets";
 import {
@@ -17,6 +18,7 @@ import {
     fechaLimiteAtencion,
     formatearDia,
     formatearFechaHora,
+    puedeCancelar,
 } from "./servicioTickets";
 import {
     iniciales,
@@ -31,14 +33,17 @@ function DetalleTicketUsuario() {
     const { codigo } = useParams();
     const navigate = useNavigate();
     const { usuario } = useAuth();
-    const { tickets, encuestas, agregarComentario } = useTickets();
+    const { tickets, encuestas, agregarComentario, cancelarTicket } = useTickets();
 
     const ticket = tickets.find((t) => t.id === codigo);
-    
+
     const [comentario, setComentario] = useState("");
+    const [mostrarCancelar, setMostrarCancelar] = useState(false);
     const comentarioRef = useRef(null);
 
-    const cerrado = ticket?.estado === "Cerrado";
+    const cancelado = ticket?.estado === "Cancelado";
+    // Un ticket cerrado o cancelado ya no admite comentarios
+    const cerrado = ticket?.estado === "Cerrado" || cancelado;
     const terminado = ticket ? ESTADOS_TERMINADOS.includes(ticket.estado) : false;
     const tecnico = ticket ? obtenerUsuario(ticket.tecnicoAsignadoId) : null;
     const hitos = ticket ? construirLineaTiempo(ticket, encuestas) : [];
@@ -48,7 +53,7 @@ function DetalleTicketUsuario() {
     // Primero la descripción del usuario; luego los comentarios públicos del equipo (las notas internas no se ven)
     const mensajes = ticket
         ? [
-            { autorId: ticket.usuarioId, fecha: ticket.fechaRegistro, mensaje: ticket.descripcion },
+            { autorId: ticket.usuarioId, fecha: ticket.fechaRegistro, mensaje: ticket.descripcion, evidencia: ticket.evidencia },
             ...[...comentariosPublicos(ticket)].sort((a, b) => new Date(a.fecha) - new Date(b.fecha)),
         ]
         : [];
@@ -68,9 +73,14 @@ function DetalleTicketUsuario() {
         setComentario("");
     }
 
+    function confirmarCancelacion() {
+        cancelarTicket(ticket.id);
+        setMostrarCancelar(false);
+    }
+
     // Al confirmar el motivo en el modal, se va al formulario con los datos del ticket copiados
     function reabrir(motivo) {
-        navigate("/mis-tickets/nuevo", {
+        navigate("/nuevo-ticket", {
             state: {
                 reabrir: {
                     ticketId: ticket.id,
@@ -110,13 +120,24 @@ function DetalleTicketUsuario() {
                                     <EtiquetaEstado estado={ticket.estado} />
                                 </div>
                                 {!cerrado && (
-                                    <button
-                                        type="button"
-                                        className="btn-secundario botonagregar"
-                                        onClick={irAComentario}
-                                    >
-                                        Agregar información
-                                    </button>
+                                    <div style={{ display: "flex", gap: "8px" }}>
+                                        {puedeCancelar(ticket) && (
+                                            <button
+                                                type="button"
+                                                className="btn-secundario"
+                                                onClick={() => setMostrarCancelar(true)}
+                                            >
+                                                Cancelar ticket
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            className="btn-secundario botonagregar"
+                                            onClick={irAComentario}
+                                        >
+                                            Agregar información
+                                        </button>
+                                    </div>
                                 )}
                             </div>
 
@@ -157,13 +178,18 @@ function DetalleTicketUsuario() {
                                                     </small>
                                                 </div>
                                                 <p>{m.mensaje}</p>
+                                                {m.evidencia && (                                                              // ← nuevo
+                                                    <img className="evidencia-detalle" src={m.evidencia.url} alt={m.evidencia.nombre} />
+                                                )}
                                             </div>
                                         );
                                     })}
 
                                     {cerrado ? (
                                         <p className="aviso-cerrado">
-                                            Este ticket está cerrado: ya no admite nuevos comentarios.
+                                            {cancelado
+                                                ? "Este ticket fue cancelado: ya no admite nuevos comentarios."
+                                                : "Este ticket está cerrado: ya no admite nuevos comentarios."}
                                         </p>
                                     ) : (
                                         <form onSubmit={enviarComentario}>
@@ -242,6 +268,14 @@ function DetalleTicketUsuario() {
                 <span>Mesa de Ayuda de Servicios del Campus - Universidad de Lima</span>
                 <span>soporte.campus@ulima.edu.pe - anexo 30500 - Términos - Privacidad</span>
             </footer>
+
+            {mostrarCancelar && ticket && (
+                <ModalCancelarTicket
+                    codigo={ticket.id}
+                    onCerrar={() => setMostrarCancelar(false)}
+                    onConfirmar={confirmarCancelacion}
+                />
+            )}
         </>
     );
 }

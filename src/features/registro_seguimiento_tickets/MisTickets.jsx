@@ -162,7 +162,7 @@ function MisTickets() {
                                 {registrados} tickets registrados - {enCurso} en curso
                             </p>
                         </div>
-                        <Link to="/mis-tickets/nuevo" className="btn-primario">
+                        <Link to="/nuevo-ticket" className="btn-primario">
                             Registrar un ticket
                         </Link>
                     </div>

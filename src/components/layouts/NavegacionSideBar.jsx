@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTickets } from '../../features/registro_seguimiento_tickets/almacenTickets';
-import { contarTickets } from '../../features/registro_seguimiento_tickets/servicioTickets';
+import { contarTickets, contarEncuestasPendientes, encuestasDeUsuario } from '../../features/registro_seguimiento_tickets/servicioTickets';
 
 const ConteoMisTickets = ({ usuarioId }) => {
   const { tickets } = useTickets();
@@ -10,6 +10,14 @@ const ConteoMisTickets = ({ usuarioId }) => {
   return <span className="nav-badge-conteo">{total}</span>;
 };
 
+// tipo "pendientes": encuestas por responder dentro del plazo. tipo "todas": todas las del usuario.
+const ConteoEncuestas = ({ usuarioId, tipo }) => {
+  const { encuestas } = useTickets();
+  const cantidad = tipo === 'pendientes'
+    ? contarEncuestasPendientes(encuestas, usuarioId)
+    : encuestasDeUsuario(encuestas, usuarioId, 'Respondida').length;
+  return <span className="nav-badge-conteo">{cantidad}</span>;
+};
 const NavegacionSidebar = () => {
   const { usuario, cerrarSesion } = useAuth();
   const navigate = useNavigate();
@@ -127,12 +135,12 @@ const NavegacionSidebar = () => {
             <div className="seccion-titulo">MIS SERVICIOS</div>
             <ul className="nav-lista">
               <li>
-                <NavLink to="/mis-tickets" end className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                <NavLink to="/inicio" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
                   <span>Inicio</span>
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/mis-tickets/nuevo" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
+                <NavLink to="/nuevo-ticket" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
                   <span>Nuevo ticket</span>
                 </NavLink>
               </li>
@@ -145,13 +153,13 @@ const NavegacionSidebar = () => {
               <li>
                 <NavLink to="/encuestas/pendiente" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
                   <span>Encuesta pendiente</span>
-                  <span className="nav-badge-conteo">1</span>
+                  <ConteoEncuestas usuarioId={usuario.id} tipo="pendientes" />
                 </NavLink>
               </li>
               <li>
                 <NavLink to="/encuestas" end className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
                   <span>Mis encuestas</span>
-                  <span className="nav-badge-conteo">7</span>
+                  <ConteoEncuestas usuarioId={usuario.id} tipo="todas" />
                 </NavLink>
               </li>
             </ul>
