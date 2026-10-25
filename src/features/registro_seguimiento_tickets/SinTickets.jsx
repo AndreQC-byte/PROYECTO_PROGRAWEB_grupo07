@@ -15,7 +15,7 @@ function SinTickets() {
                             <h1>Mis tickets</h1>
                             <p id="resumen">0 tickets registrados</p>
                         </div>
-                        <Link to="/mis-tickets/nuevo" className="btn-primario">
+                        <Link to="/nuevo-ticket" className="btn-primario">
                             Registrar un ticket
                         </Link>
                     </div>
@@ -24,7 +24,7 @@ function SinTickets() {
                         <span className="iconovacio"></span>
                         <h2>Todavía no has reportado nada</h2>
                         <p>Cuando registres un ticket lo verás aquí con su estado y su prioridad.</p>
-                        <Link to="/mis-tickets/nuevo" className="btn-primario">
+                        <Link to="/nuevo-ticket" className="btn-primario">
                             Registrar un ticket
                         </Link>
                     </div>

@@ -175,7 +175,7 @@ const AppRouter = () => {
           }
         />
         <Route
-          path="/mis-tickets/nuevo"
+          path="/nuevo-ticket"
           element={
             <RutaProtegida rolesPermitidos={['Usuario']}>
               <NuevoTicket />
@@ -183,8 +183,7 @@ const AppRouter = () => {
           }
         />
         <Route
-          path="/mis-tickets/nuevo/registrado"
-          element={
+          path="/nuevo-ticket/registrado" element={
             <RutaProtegida rolesPermitidos={['Usuario']}>
               <ConfirmacionTicket />
             </RutaProtegida>

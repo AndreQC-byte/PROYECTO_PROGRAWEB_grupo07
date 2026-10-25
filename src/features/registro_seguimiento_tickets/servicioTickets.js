@@ -1,5 +1,4 @@
 // Capa de datos y reglas de negocio de la HU-3 (Registro y seguimiento de tickets).
-// Las pantallas no leen db.json: pasan por este módulo, igual que servicioAtencion.js.
 import db from '../../data/db.json';
 import {
     construirHistorialInicial,
@@ -9,7 +8,7 @@ import {
 } from '../atencion_cierre_tickets/servicioAtencion';
 
 export const ESTADOS_TERMINADOS = ['Resuelto', 'Cerrado'];
-export const ESTADOS = ['Abierto', 'Asignado', 'En atención', 'En espera', 'Resuelto', 'Cerrado', 'Reabierto'];
+export const ESTADOS = ['Abierto', 'Asignado', 'En atención', 'En espera', 'Resuelto', 'Cerrado', 'Reabierto', 'Cancelado'];
 export const PRIORIDADES = ['Crítica', 'Alta', 'Media', 'Baja'];
 export const DIAS_PLAZO_ENCUESTA = 7; // la encuesta y la reapertura se admiten hasta 7 días después del cierre
 
@@ -17,7 +16,13 @@ const MS_MINUTO = 60 * 1000;
 const MS_HORA = 60 * MS_MINUTO;
 const MS_DIA = 24 * MS_HORA;
 
-export const estaEnCurso = (ticket) => !ESTADOS_TERMINADOS.includes(ticket.estado);
+// En curso = no terminó y no fue cancelado
+export const estaEnCurso = (ticket) =>
+    !ESTADOS_TERMINADOS.includes(ticket.estado) && ticket.estado !== 'Cancelado';
+
+// Solo se cancela si nadie lo tomó todavía
+export const puedeCancelar = (ticket) =>
+    ticket.estado === 'Abierto' && !ticket.tecnicoAsignadoId;
 
 // ---------- Formato de fechas ----------
 
@@ -79,6 +84,12 @@ export const ticketsDeUsuario = (tickets, usuarioId) =>
 
 export const encuestasDeUsuario = (encuestas, usuarioId, estado) =>
     encuestas.filter((e) => e.usuarioId === usuarioId && (!estado || e.estado === estado));
+
+// Encuestas que el usuario aún puede responder: pendientes y dentro del plazo de 7 días
+export const contarEncuestasPendientes = (encuestas, usuarioId) =>
+    encuestasDeUsuario(encuestas, usuarioId, 'Pendiente').filter(
+        (e) => Date.now() <= new Date(e.fechaEnvio).getTime() + DIAS_PLAZO_ENCUESTA * MS_DIA
+    ).length;
 
 // Solo lo que el usuario puede ver: las notas internas del equipo técnico no
 export const comentariosPublicos = (ticket) =>
@@ -197,6 +208,7 @@ export const crearTicket = (tickets, datos) => {
         fechaAsignacion: null,
         tiempoEsperadoHoras: subcategoria.tiempoEsperadoHoras,
         bitacora,
+        evidencia: datos.evidencia || null,
     };
 };
 
@@ -223,6 +235,17 @@ export const construirLineaTiempo = (ticket, encuestas) => {
         }
         return { tipo: 'actual', titulo: 'En atención', fecha: e.fecha, detalle: nombreTecnico };
     });
+
+    // Ticket cancelado: la línea termina en "Cancelado" y no muestra pasos pendientes
+    if (ticket.estado === 'Cancelado') {
+        hitos.push({
+            tipo: 'cerrado',
+            titulo: 'Cancelado',
+            fecha: ticket.fechaCancelacion || null,
+            detalle: 'cancelado por ti',
+        });
+        return hitos;
+    }
 
     if (ESTADOS_TERMINADOS.includes(ticket.estado)) {
         // El ticket ya terminó: el último paso deja de ser "actual"

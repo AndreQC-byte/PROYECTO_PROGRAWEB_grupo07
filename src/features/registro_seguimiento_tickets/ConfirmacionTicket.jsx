@@ -23,7 +23,7 @@ function ConfirmacionTicket() {
   const ticket = tickets.find((t) => t.id === state?.ticketId);
 
   // Si entran directo a esta dirección, no hay ticket: vuelven al formulario
-  if (!ticket) return <Navigate to="/mis-tickets/nuevo" replace />;
+  if (!ticket) return <Navigate to="/nuevo-ticket" replace />;
 
   const limite = fechaLimiteAtencion(ticket);
 
