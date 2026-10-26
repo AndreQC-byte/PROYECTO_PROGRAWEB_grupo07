@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTickets } from '../../features/registro_seguimiento_tickets/almacenTickets';
+import { contarTickets } from '../../features/registro_seguimiento_tickets/servicioTickets';
+
+// Tickets en curso del usuario (no cuenta resueltos, cerrados ni cancelados)
+const ConteoAbiertos = ({ usuarioId }) => {
+  const { tickets } = useTickets();
+  const { enCurso } = contarTickets(tickets, usuarioId);
+  return <span style={{ fontWeight: 700 }}>{enCurso}</span>;
+};
 
 const Encabezado = () => {
   const { usuario, cerrarSesion } = useAuth();
   const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();
+  const { tickets } = useTickets();
+  const [errorBusqueda, setErrorBusqueda] = useState('');
 
   const manejarBuscar = (e) => {
     e.preventDefault();
@@ -17,7 +28,16 @@ const Encabezado = () => {
     } else if (usuario?.rol === 'Técnico') {
       navigate(`/tecnico/bandeja?buscar=${encodeURIComponent(codigo)}`);
     } else {
-      navigate(`/mis-tickets?buscar=${encodeURIComponent(codigo)}`);
+      // Usuario: va directo al detalle. Solo acepta el código completo (ej. TCK-2026-00131)
+      const buscado = codigo.toUpperCase();
+      const ticket = tickets.find((t) => t.usuarioId === usuario?.id && t.id === buscado);
+      if (ticket) {
+        setBusqueda('');
+        setErrorBusqueda('');
+        navigate(`/mis-tickets/${ticket.id}`);
+      } else {
+        setErrorBusqueda(`No encontramos el ticket ${codigo}.`);
+      }
     }
   };
 
@@ -56,7 +76,7 @@ const Encabezado = () => {
     return (
       <Link to="/mis-tickets" className="badge-rol-conteo" title="Ver mis tickets abiertos">
         <span>MIS TICKETS ABIERTOS</span>
-        <span style={{ fontWeight: 700 }}>3</span>
+        <ConteoAbiertos usuarioId={usuario.id} />
       </Link>
     );
   };
@@ -71,15 +91,27 @@ const Encabezado = () => {
       </Link>
 
       {usuario ? (
-        <form onSubmit={manejarBuscar} className="buscador-global-form">
+        <form onSubmit={manejarBuscar} className="buscador-global-form" style={{ position: 'relative' }}>
           <span className="buscador-icono">⌕</span>
           <input
             type="text"
             className="buscador-global-input"
             placeholder="Buscar por código de ticket · TCK-2026-…"
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+            onChange={(e) => { setBusqueda(e.target.value); setErrorBusqueda(''); }}
           />
+          {errorBusqueda && (
+            <span
+              role="alert"
+              style={{
+                position: 'absolute', top: '100%', left: 0, marginTop: 4, zIndex: 30,
+                padding: '6px 10px', borderRadius: 4, fontSize: 12, whiteSpace: 'nowrap',
+                background: '#FBEAE8', color: 'var(--color-danger)', border: '1px solid var(--color-danger)',
+              }}
+            >
+              {errorBusqueda}
+            </span>
+          )}
         </form>
       ) : (
         <div style={{ flex: 1 }} />
