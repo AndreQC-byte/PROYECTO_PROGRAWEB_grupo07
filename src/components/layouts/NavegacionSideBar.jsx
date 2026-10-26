@@ -120,11 +120,6 @@ const NavegacionSidebar = () => {
                   <span className="nav-badge-conteo">2</span>
                 </NavLink>
               </li>
-              <li>
-                <NavLink to="/tecnico/historial" className={({ isActive }) => `nav-item-link ${isActive ? 'activo' : ''}`}>
-                  <span>Historial</span>
-                </NavLink>
-              </li>
             </ul>
           </nav>
         )}
